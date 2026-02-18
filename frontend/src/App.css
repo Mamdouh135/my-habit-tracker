@@ -1,0 +1,81 @@
+body {
+  font-family: 'Segoe UI', Arial, sans-serif;
+  background: #f7f7fa;
+  margin: 0;
+  padding: 0;
+}
+
+.app-container {
+  max-width: 600px;
+  margin: 40px auto;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 2px 16px rgba(0,0,0,0.08);
+  padding: 32px;
+}
+
+h1 {
+  color: #4a4a7c;
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+input, button {
+  font-size: 1rem;
+  padding: 8px 12px;
+  margin: 6px 0;
+  border-radius: 6px;
+  border: 1px solid #d1d1e0;
+}
+
+button {
+  background: #4a4a7c;
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+button:hover {
+  background: #6a6ab8;
+}
+
+ul {
+  list-style: none;
+  padding: 0;
+}
+
+li {
+  background: #f0f0ff;
+  margin-bottom: 8px;
+  padding: 12px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.error {
+  color: #d32f2f;
+  margin-top: 8px;
+}
+
+.auth-toggle {
+  background: none;
+  color: #4a4a7c;
+  border: none;
+  text-decoration: underline;
+  cursor: pointer;
+  margin-top: 8px;
+}
+
+.logout-btn {
+  background: #d32f2f;
+  color: #fff;
+  margin-bottom: 16px;
+}
+
+.habit-done {
+  color: #388e3c;
+  font-weight: bold;
+  margin-left: 8px;
+}

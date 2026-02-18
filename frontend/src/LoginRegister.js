@@ -33,10 +33,10 @@ export default function LoginRegister() {
         <input placeholder="Password" type="password" value={password} onChange={e => setPassword(e.target.value)} />
         <button type="submit">{isRegister ? 'Register' : 'Login'}</button>
       </form>
-      <button onClick={() => setIsRegister(r => !r)}>
+      <button className="auth-toggle" onClick={() => setIsRegister(r => !r)}>
         {isRegister ? 'Have an account? Login' : 'No account? Register'}
       </button>
-      {error && <div style={{color:'red'}}>{error}</div>}
+      {error && <div className="error">{error}</div>}
     </div>
   );
 }

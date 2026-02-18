@@ -50,19 +50,21 @@ export default function Habits() {
   return (
     <div>
       <h2>Your Habits</h2>
-      <button onClick={logout}>Logout</button>
+      <button className="logout-btn" onClick={logout}>Logout</button>
       <div>
         <input placeholder="New habit" value={newHabit} onChange={e => setNewHabit(e.target.value)} />
         <button onClick={handleAdd}>Add</button>
       </div>
-      {error && <div style={{color:'red'}}>{error}</div>}
+      {error && <div className="error">{error}</div>}
       <ul>
         {habits.map(habit => (
           <li key={habit.id}>
-            {habit.name}
-            <button onClick={() => handleDelete(habit.id)}>Delete</button>
-            <button onClick={() => handleComplete(habit.id)} disabled={completions[habit.id]}>Mark as done today</button>
-            {completions[habit.id] && <span>✔️</span>}
+            <span>{habit.name}</span>
+            <div>
+              <button onClick={() => handleDelete(habit.id)}>Delete</button>
+              <button onClick={() => handleComplete(habit.id)} disabled={completions[habit.id]}>Mark as done today</button>
+              {completions[habit.id] && <span className="habit-done">✔️</span>}
+            </div>
           </li>
         ))}
       </ul>
