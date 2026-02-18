@@ -1,16 +1,17 @@
-import React, { useContext } from 'react';
-import { AuthContext } from './AuthContext';
-import LoginRegister from './LoginRegister';
-import Habits from './Habits';
-import './App.css';
-
 function App() {
   const { token } = useContext(AuthContext);
+  const [page, setPage] = useState('home');
   return (
-    <div className="app-container">
-      <h1>Habit Tracker SaaS</h1>
-      {token ? <Habits /> : <LoginRegister />}
-    </div>
+    <>
+      <header className="site-header">Habit Tracker SaaS</header>
+      <nav className="site-nav">
+        <button onClick={() => setPage('home')}>Home</button>
+        <button onClick={() => setPage('about')}>About Me</button>
+      </nav>
+      <div className="main-content">
+        {page === 'about' ? <AboutMe /> : (token ? <Habits /> : <LoginRegister />)}
+      </div>
+    </>
   );
 }
 
