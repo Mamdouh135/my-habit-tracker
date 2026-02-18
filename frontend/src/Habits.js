@@ -51,19 +51,19 @@ export default function Habits() {
     <div>
       <h2>Your Habits</h2>
       <button className="logout-btn" onClick={logout}>Logout</button>
-      <div>
-        <input placeholder="New habit" value={newHabit} onChange={e => setNewHabit(e.target.value)} />
-        <button onClick={handleAdd}>Add</button>
+      <div className="add-habit-row">
+        <input className="add-habit-input" placeholder="New habit" value={newHabit} onChange={e => setNewHabit(e.target.value)} />
+        <button className="add-habit-btn" onClick={handleAdd}>Add</button>
       </div>
       {error && <div className="error">{error}</div>}
       <ul>
         {habits.map(habit => (
           <li key={habit.id}>
-            <span>{habit.name}</span>
-            <div>
-              <button onClick={() => handleDelete(habit.id)}>Delete</button>
-              <button onClick={() => handleComplete(habit.id)} disabled={completions[habit.id]}>Mark as done today</button>
-              {completions[habit.id] && <span className="habit-done">✔️</span>}
+            <span className="habit-name">{habit.name}</span>
+            <div className="habit-actions">
+              <button className="habit-delete-btn" onClick={() => handleDelete(habit.id)} title="Delete"><span role="img" aria-label="delete">🗑️</span> Delete</button>
+              <button className="habit-complete-btn" onClick={() => handleComplete(habit.id)} disabled={completions[habit.id]} title="Mark as done"><span role="img" aria-label="done">✅</span> Mark as done</button>
+              {completions[habit.id] && <span className="habit-done" title="Completed">✔️</span>}
             </div>
           </li>
         ))}

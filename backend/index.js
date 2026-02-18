@@ -2,6 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import { initDb } from './database.js';
 import routes from './routes.js';
+import contactRoutes from './contact.js';
 
 const app = express();
 app.use(cors());
@@ -12,6 +13,7 @@ app.get('/', (req, res) => {
 });
 
 app.use(routes);
+app.use(contactRoutes);
 
 const PORT = process.env.PORT || 4000;
 initDb().then(() => {
