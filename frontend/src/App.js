@@ -6,6 +6,7 @@ import AboutMe from './AboutMe';
 import ContactMe from './ContactMe';
 import Hero from './Hero';
 import Tutorial from './Tutorial';
+import { getMe } from './api';
 function App() {
   const { token } = useContext(AuthContext);
   const [page, setPage] = useState('home');
@@ -13,6 +14,7 @@ function App() {
   const [authInitial, setAuthInitial] = useState(null); // 'register' | 'login' | null
   const [showTutorial, setShowTutorial] = useState(false);
   const [showGetStartedFlag, setShowGetStartedFlag] = useState(false);
+  const [tutorialSeen, setTutorialSeen] = useState(!!localStorage.getItem('tutorialSeen'));
   const contactRef = useRef(null);
 
   React.useEffect(() => {
@@ -23,9 +25,13 @@ function App() {
   React.useEffect(() => {
     const sync = async () => {
       if (!token) {
+        // when not authenticated, use local flag only
+        const seenLocal = localStorage.getItem('tutorialSeen') === 'true';
+        setTutorialSeen(seenLocal);
         setShowGetStartedFlag(false);
         return;
       }
+
       // server-side check wins; fall back to localStorage when server is unavailable
       try {
         const res = await getMe(token);
@@ -33,6 +39,7 @@ function App() {
         if (serverSeen) {
           localStorage.setItem('tutorialSeen', 'true');
           localStorage.removeItem('showGetStarted');
+          setTutorialSeen(true);
           setShowGetStartedFlag(false);
           return;
         }
@@ -40,7 +47,9 @@ function App() {
         // ignore and fall back to localStorage
       }
 
-      const shouldShow = !!(localStorage.getItem('showGetStarted') === 'true' && localStorage.getItem('tutorialSeen') !== 'true');
+      const seenLocal = localStorage.getItem('tutorialSeen') === 'true';
+      const shouldShow = !!(localStorage.getItem('showGetStarted') === 'true' && !seenLocal);
+      setTutorialSeen(seenLocal);
       setShowGetStartedFlag(shouldShow);
       if (shouldShow) setShowTutorial(true);
     };
@@ -61,14 +70,28 @@ function App() {
         <div className="header-subtitle">Track your habits, grow your life</div>
         <button className="header-contact-btn" onClick={handleScrollToContact}>Contact Me</button>
       </header>
-      <Hero
-        contactRef={contactRef}
-        setPage={setPage}
-        token={token}
-        setAuthInitial={setAuthInitial}
-        showGetStarted={showGetStartedFlag}
-        openTutorial={() => setShowTutorial(true)}
-      />
+      {!tutorialSeen && (
+        <Hero
+          contactRef={contactRef}
+          setPage={setPage}
+          token={token}
+          setAuthInitial={setAuthInitial}
+          showGetStarted={showGetStartedFlag}
+          openTutorial={() => setShowTutorial(true)}
+        />
+      )}
+
+      {/* replay bubble — shown after tutorial was seen so user can re-open it */}
+      {tutorialSeen && (
+        <button
+          className="tutorial-replay"
+          title="Show tutorial"
+          aria-label="Show tutorial"
+          onClick={() => setShowTutorial(true)}
+        >
+          🛈
+        </button>
+      )}
       <div className="main-wrapper">
         <aside className="sidebar">
           <div className="sidebar-title">Navigation</div>
@@ -86,7 +109,7 @@ function App() {
           </div>
         </main>
         {/* Render tutorial at root level so it truly pops up above everything */}
-          <Tutorial visible={showTutorial} onClose={() => setShowTutorial(false)} token={token} />
+          <Tutorial visible={showTutorial} onClose={() => { setShowTutorial(false); setTutorialSeen(true); }} token={token} />
       </div>
       <footer className="site-footer">
         &copy; {new Date().getFullYear()} Habit Tracker SaaS. All rights reserved. | Created by Mamdouh

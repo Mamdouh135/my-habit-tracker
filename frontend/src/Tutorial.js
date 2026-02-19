@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { setTutorialSeen } from './api';
 
 export default function Tutorial({ visible, onClose, token }) {
   const [step, setStep] = useState(0);
