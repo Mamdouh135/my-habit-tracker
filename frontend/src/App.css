@@ -307,9 +307,9 @@ body:not(.dark) #contact-section button {
 :root {
   --bg-start: #fdfbfb; /* very soft off-white */
   --bg-end: #ebedee;   /* pale lavender */
-  --accent-cyan: #00d7ff; /* softened cyan */
-  --accent-purple: #9b8bff; /* softened purple */
-  --accent-cyan-strong: #00bcd4;
+  --accent-cyan: #00bcd4; /* refreshed cyan */
+  --accent-purple: #7c4dff; /* refreshed purple */
+  --accent-cyan-strong: #00a9c7;
   --glass-bg: rgba(255,255,255,0.66);
   --glass-border: rgba(0,242,254,0.20);
   --glass-radius: 18px;

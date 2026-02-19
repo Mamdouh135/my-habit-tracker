@@ -2,11 +2,15 @@ import React from 'react';
 
 export default function Hero({ contactRef, setPage, token }) {
   const handlePrimary = () => {
-    if (contactRef && contactRef.current) {
-      contactRef.current.scrollIntoView({ behavior: 'smooth' });
-    } else {
-      setPage('about');
+    // Primary CTA behaviour:
+    // - if the user is not authenticated, take them to the auth screen and pre-select Register
+    // - if authenticated, navigate to the app (home -> Habits)
+    if (!token) {
+      try { localStorage.setItem('authInitial', 'register'); } catch (e) {}
+      setPage('home');
+      return;
     }
+    setPage('home');
   };
 
   const handleSecondary = () => setPage('about');

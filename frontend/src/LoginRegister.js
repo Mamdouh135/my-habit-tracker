@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import { register, login } from './api';
 import { AuthContext } from './AuthContext';
 
@@ -8,6 +8,17 @@ export default function LoginRegister() {
   const [isRegister, setIsRegister] = useState(false);
   const [error, setError] = useState('');
   const { login: doLogin } = useContext(AuthContext);
+
+  useEffect(() => {
+    // allow hero CTA to pre-select the register tab
+    try {
+      const v = localStorage.getItem('authInitial');
+      if (v === 'register') {
+        setIsRegister(true);
+        localStorage.removeItem('authInitial');
+      }
+    } catch (e) {}
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
