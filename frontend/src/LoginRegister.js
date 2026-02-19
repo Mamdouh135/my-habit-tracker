@@ -21,8 +21,6 @@ export default function LoginRegister({ initial }) {
     try {
       if (isRegister) {
         await register(username, password);
-        // mark that this browser should show the one-time Get Started tutorial
-        try { localStorage.setItem('showGetStarted', 'true'); } catch (err) {}
         setIsRegister(false);
       } else {
         const res = await login(username, password);

@@ -37,7 +37,6 @@ export default function Tutorial({ visible, onClose, token }) {
     try {
       // persist locally
       localStorage.setItem('tutorialSeen', 'true');
-      localStorage.removeItem('showGetStarted');
       // persist server-side when authenticated
       if (token) {
         try { await setTutorialSeen(token); } catch (e) { /* ignore server errors */ }

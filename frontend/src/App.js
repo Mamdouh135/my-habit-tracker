@@ -13,7 +13,6 @@ function App() {
   const [dark, setDark] = useState(false);
   const [authInitial, setAuthInitial] = useState(null); // 'register' | 'login' | null
   const [showTutorial, setShowTutorial] = useState(false);
-  const [showGetStartedFlag, setShowGetStartedFlag] = useState(false);
   const [tutorialSeen, setTutorialSeen] = useState(!!localStorage.getItem('tutorialSeen'));
   const contactRef = useRef(null);
 
@@ -21,37 +20,30 @@ function App() {
     document.body.classList.toggle('dark', dark);
   }, [dark]);
 
-  // Reflect localStorage flag into React state and auto-open tutorial after first login
+  // Sync server/local tutorialSeen state and show the initial 'Get Started' prompt bubble (NOT auto-opening tutorial)
   React.useEffect(() => {
     const sync = async () => {
       if (!token) {
-        // when not authenticated, use local flag only
         const seenLocal = localStorage.getItem('tutorialSeen') === 'true';
         setTutorialSeen(seenLocal);
-        setShowGetStartedFlag(false);
         return;
       }
 
-      // server-side check wins; fall back to localStorage when server is unavailable
       try {
         const res = await getMe(token);
         const serverSeen = !!res.data?.tutorialSeen;
         if (serverSeen) {
           localStorage.setItem('tutorialSeen', 'true');
-          localStorage.removeItem('showGetStarted');
           setTutorialSeen(true);
-          setShowGetStartedFlag(false);
           return;
         }
       } catch (e) {
-        // ignore and fall back to localStorage
+        // server unavailable, fall back to localStorage
       }
 
       const seenLocal = localStorage.getItem('tutorialSeen') === 'true';
-      const shouldShow = !!(localStorage.getItem('showGetStarted') === 'true' && !seenLocal);
       setTutorialSeen(seenLocal);
-      setShowGetStartedFlag(shouldShow);
-      if (shouldShow) setShowTutorial(true);
+      // do NOT auto-open tutorial; instead show the top-left prompt bubble (render logic uses `tutorialSeen`)
     };
     sync();
   }, [token]);
@@ -62,8 +54,10 @@ function App() {
     }
   };
 
+  const promptVisible = !!(token && !tutorialSeen); // first-time login prompt
+
   return (
-    <div id="layout">
+    <div id="layout" className={promptVisible ? 'tutorial-prompt-active' : ''}>
       <header className="site-header">
         <div className="header-logo">🌱</div>
         <div className="header-title">Habit Tracker SaaS</div>
@@ -76,20 +70,19 @@ function App() {
           setPage={setPage}
           token={token}
           setAuthInitial={setAuthInitial}
-          showGetStarted={showGetStartedFlag}
           openTutorial={() => setShowTutorial(true)}
         />
       )}
 
-      {/* replay bubble — shown after tutorial was seen so user can re-open it */}
-      {tutorialSeen && (
+      {/* top-left bubble: primary 'Get Started' for first-time logged-in users, replay bubble afterwards */}
+      {token && (
         <button
-          className="tutorial-replay"
-          title="Show tutorial"
-          aria-label="Show tutorial"
+          className={`tutorial-replay ${promptVisible ? 'primary' : 'replay'}`}
+          title={promptVisible ? 'Get Started' : 'Show tutorial'}
+          aria-label={promptVisible ? 'Get Started' : 'Show tutorial'}
           onClick={() => setShowTutorial(true)}
         >
-          🛈
+          {promptVisible ? 'Get Started' : '🛈'}
         </button>
       )}
       <div className="main-wrapper">
