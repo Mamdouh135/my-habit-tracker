@@ -520,6 +520,28 @@ body.dark {
   .tutorial-title { font-size:1.25rem; }
 }
 
+/* interactive highlight + pointer */
+.tutorial-highlight {
+  position: fixed;
+  border-radius: 10px;
+  background: linear-gradient(0deg, rgba(255,255,255,0.06), rgba(255,255,255,0.02));
+  box-shadow: 0 12px 40px rgba(0,0,0,0.35), 0 0 0 4px rgba(0,188,212,0.06);
+  border: 2px solid rgba(0,188,212,0.18);
+  transition: all 180ms ease;
+  z-index: 12500;
+  pointer-events: none;
+}
+.tutorial-pointer { position: fixed; transform: translate(-50%, -100%); z-index: 12510; pointer-events: none; }
+.tutorial-pointer .tutorial-pointer-label { background: linear-gradient(90deg, var(--accent-cyan), var(--accent-purple)); color: #fff; padding: 8px 12px; border-radius: 10px; font-weight:800; box-shadow: 0 10px 30px rgba(0,0,0,0.18); }
+.tutorial-pointer-bottom { transform: translate(-50%, 0%); }
+.tutorial-pointer::after { content: ''; position: absolute; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-style: solid; }
+.tutorial-pointer-top::after { bottom: -8px; border-width: 8px 8px 0 8px; border-color: rgba(0,0,0,0.18) transparent transparent transparent; }
+.tutorial-pointer-bottom::after { top: -8px; border-width: 0 8px 8px 8px; border-color: transparent transparent rgba(0,0,0,0.18) transparent; }
+.tutorial-pointer-left { transform: translate(-120%, -50%); }
+.tutorial-pointer-left::after { right: -8px; top: 50%; transform: translateY(-50%); border-width: 8px 0 8px 8px; border-color: transparent transparent transparent rgba(0,0,0,0.18); }
+.tutorial-pointer-right { transform: translate(20%, -50%); }
+.tutorial-pointer-right::after { left: -8px; top: 50%; transform: translateY(-50%); border-width: 8px 8px 8px 0; border-color: transparent rgba(0,0,0,0.18) transparent transparent; }
+
 /* replay bubble (top-left) */
 .tutorial-replay {
   position: fixed;

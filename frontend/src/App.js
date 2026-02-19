@@ -53,9 +53,10 @@ function App() {
   };
 
   const promptVisible = !!(token && !tutorialSeen); // first-time login prompt
+  const promptActive = promptVisible && !showTutorial; // hide prompt while tutorial overlay is open
 
   return (
-    <div id="layout" className={promptVisible ? 'tutorial-prompt-active' : ''}>
+    <div id="layout" className={promptActive ? 'tutorial-prompt-active' : ''}>
       <header className="site-header">
         <div className="header-logo">🌱</div>
         <div className="header-title">Habit Tracker SaaS</div>
@@ -63,7 +64,7 @@ function App() {
         <button className="header-contact-btn" onClick={handleScrollToContact}>Contact Me</button>
       </header>
       {/* Centered Get Started prompt for first-time logged-in users */}
-      {promptVisible && (
+      {promptActive && (
         <div className="getstarted-center" role="dialog" aria-modal="true">
           <div className="getstarted-card">
             <h2>Welcome — Get Started</h2>
@@ -106,7 +107,7 @@ function App() {
           </div>
         </main>
         {/* Render tutorial at root level so it truly pops up above everything */}
-          <Tutorial visible={showTutorial} onClose={() => { setShowTutorial(false); setTutorialSeen(true); }} token={token} />
+          <Tutorial visible={showTutorial} onClose={() => { setShowTutorial(false); setTutorialSeen(true); }} token={token} setPage={setPage} />
       </div>
       <footer className="site-footer">
         &copy; {new Date().getFullYear()} Habit Tracker SaaS. All rights reserved. | Created by Mamdouh
