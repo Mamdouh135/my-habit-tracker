@@ -1,10 +1,10 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useState, useRef } from 'react';
 import { AuthContext } from './AuthContext';
 import LoginRegister from './LoginRegister';
 import Habits from './Habits';
 import AboutMe from './AboutMe';
 import ContactMe from './ContactMe';
-import { useRef } from 'react';
+import Hero from './Hero';
 function App() {
   const { token } = useContext(AuthContext);
   const [page, setPage] = useState('home');
@@ -29,6 +29,7 @@ function App() {
         <div className="header-subtitle">Track your habits, grow your life</div>
         <button className="header-contact-btn" onClick={handleScrollToContact}>Contact Me</button>
       </header>
+      <Hero contactRef={contactRef} setPage={setPage} token={token} />
       <div className="main-wrapper">
         <aside className="sidebar">
           <div className="sidebar-title">Navigation</div>
