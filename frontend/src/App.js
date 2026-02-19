@@ -4,14 +4,12 @@ import LoginRegister from './LoginRegister';
 import Habits from './Habits';
 import AboutMe from './AboutMe';
 import ContactMe from './ContactMe';
-import Hero from './Hero';
 import Tutorial from './Tutorial';
-import { getMe } from './api';
+import { getMe, resetTutorial } from './api';
 function App() {
   const { token } = useContext(AuthContext);
   const [page, setPage] = useState('home');
   const [dark, setDark] = useState(false);
-  const [authInitial, setAuthInitial] = useState(null); // 'register' | 'login' | null
   const [showTutorial, setShowTutorial] = useState(false);
   const [tutorialSeen, setTutorialSeen] = useState(!!localStorage.getItem('tutorialSeen'));
   const contactRef = useRef(null);
@@ -64,26 +62,32 @@ function App() {
         <div className="header-subtitle">Track your habits, grow your life</div>
         <button className="header-contact-btn" onClick={handleScrollToContact}>Contact Me</button>
       </header>
-      {!tutorialSeen && (
-        <Hero
-          contactRef={contactRef}
-          setPage={setPage}
-          token={token}
-          setAuthInitial={setAuthInitial}
-          openTutorial={() => setShowTutorial(true)}
-        />
+      {/* Centered Get Started prompt for first-time logged-in users */}
+      {promptVisible && (
+        <div className="getstarted-center" role="dialog" aria-modal="true">
+          <div className="getstarted-card">
+            <h2>Welcome — Get Started</h2>
+            <p className="muted">A short walkthrough will show how to add and complete habits.</p>
+            <div className="getstarted-actions">
+              <button className="getstarted-btn" onClick={() => setShowTutorial(true)}>Get Started</button>
+            </div>
+          </div>
+        </div>
       )}
 
-      {/* top-left bubble: primary 'Get Started' for first-time logged-in users, replay bubble afterwards */}
-      {token && (
-        <button
-          className={`tutorial-replay ${promptVisible ? 'primary' : 'replay'}`}
-          title={promptVisible ? 'Get Started' : 'Show tutorial'}
-          aria-label={promptVisible ? 'Get Started' : 'Show tutorial'}
-          onClick={() => setShowTutorial(true)}
-        >
-          {promptVisible ? 'Get Started' : '🛈'}
-        </button>
+      {/* replay bubble — shown after tutorial was seen so user can re-open it */}
+      {token && tutorialSeen && (
+        <div style={{display:'flex',flexDirection:'column',gap:8}}>
+          <button
+            className={`tutorial-replay replay`}
+            title={'Show tutorial'}
+            aria-label={'Show tutorial'}
+            onClick={() => setShowTutorial(true)}
+          >
+            🛈
+          </button>
+          <button className="tutorial-reset" onClick={async () => { try { await resetTutorial(token); localStorage.removeItem('tutorialSeen'); setTutorialSeen(false); } catch(e){ /* ignore */ } }} title="Reset tutorial">Reset</button>
+        </div>
       )}
       <div className="main-wrapper">
         <aside className="sidebar">
@@ -95,7 +99,7 @@ function App() {
           </button>
         </aside>
         <main className="main-content">
-          {page === 'about' ? <AboutMe /> : (token ? <Habits /> : <LoginRegister initial={authInitial} />)}
+          {page === 'about' ? <AboutMe /> : (token ? <Habits /> : <LoginRegister />)}
           {/* ContactMe at end of landing page */}
           <div ref={contactRef} id="contact-section">
             <ContactMe />
