@@ -52,6 +52,20 @@ router.get('/habits', auth, async (req, res) => {
   res.json(habits);
 });
 
+// Get current user info (including tutorialSeen)
+router.get('/me', auth, async (req, res) => {
+  const db = await openDb();
+  const user = await db.get('SELECT id, username, COALESCE(tutorialSeen, 0) as tutorialSeen FROM users WHERE id = ?', [req.userId]);
+  res.json(user);
+});
+
+// Mark tutorial as seen for the logged-in user
+router.post('/me/tutorial-seen', auth, async (req, res) => {
+  const db = await openDb();
+  await db.run('UPDATE users SET tutorialSeen = 1 WHERE id = ?', [req.userId]);
+  res.json({ success: true });
+});
+
 // Add habit
 router.post('/habits', auth, async (req, res) => {
   const { name } = req.body;

@@ -14,6 +14,14 @@ export function getHabits(token) {
   return axios.get(`${API_URL}/habits`, { headers: { Authorization: `Bearer ${token}` } });
 }
 
+export function getMe(token) {
+  return axios.get(`${API_URL}/me`, { headers: { Authorization: `Bearer ${token}` } });
+}
+
+export function setTutorialSeen(token) {
+  return axios.post(`${API_URL}/me/tutorial-seen`, {}, { headers: { Authorization: `Bearer ${token}` } });
+}
+
 export function addHabit(token, name) {
   return axios.post(`${API_URL}/habits`, { name }, { headers: { Authorization: `Bearer ${token}` } });
 }
@@ -28,4 +36,12 @@ export function completeHabit(token, id, date) {
 
 export function getCompletions(token, id) {
   return axios.get(`${API_URL}/habits/${id}/completions`, { headers: { Authorization: `Bearer ${token}` } });
+}
+
+// tutorial / user info
+export function getMe(token) {
+  return axios.get(`${API_URL}/me`, { headers: { Authorization: `Bearer ${token}` } });
+}
+export function setTutorialSeen(token) {
+  return axios.post(`${API_URL}/me/tutorial-seen`, {}, { headers: { Authorization: `Bearer ${token}` } });
 }

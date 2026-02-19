@@ -2,7 +2,7 @@ import React, { useState, useContext, useEffect } from 'react';
 import { register, login } from './api';
 import { AuthContext } from './AuthContext';
 
-export default function LoginRegister() {
+export default function LoginRegister({ initial }) {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [isRegister, setIsRegister] = useState(false);
@@ -10,15 +10,10 @@ export default function LoginRegister() {
   const { login: doLogin } = useContext(AuthContext);
 
   useEffect(() => {
-    // allow hero CTA to pre-select the register tab
-    try {
-      const v = localStorage.getItem('authInitial');
-      if (v === 'register') {
-        setIsRegister(true);
-        localStorage.removeItem('authInitial');
-      }
-    } catch (e) {}
-  }, []);
+    // allow hero CTA or App to pre-select the register/login tab via prop
+    if (initial === 'register') setIsRegister(true);
+    if (initial === 'login') setIsRegister(false);
+  }, [initial]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -26,6 +21,8 @@ export default function LoginRegister() {
     try {
       if (isRegister) {
         await register(username, password);
+        // mark that this browser should show the one-time Get Started tutorial
+        try { localStorage.setItem('showGetStarted', 'true'); } catch (err) {}
         setIsRegister(false);
       } else {
         const res = await login(username, password);
