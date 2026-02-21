@@ -1,3 +1,12 @@
+/* Profile overlay backdrop */
+.profile-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  z-index: 999;
+  cursor: pointer;
+}
+
 /* sliding drawer */
 .profile-drawer {
   position: fixed;

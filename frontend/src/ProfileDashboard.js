@@ -141,11 +141,13 @@ export default function ProfileDashboard({ visible, onClose, token }) {
   };
 
   const drawerContent = (
-    <div className={`profile-drawer${visible ? ' open' : ''}`}>      
-      <header className="profile-header">
-        <div className="profile-title">{t('yourProfile')}</div>
-        <button className="profile-close" onClick={onClose} aria-label={t('close')}>×</button>
-      </header>
+    <>
+      {visible && <div className="profile-overlay" onClick={onClose}></div>}
+      <div className={`profile-drawer${visible ? ' open' : ''}`}>      
+        <header className="profile-header">
+          <div className="profile-title">{t('yourProfile')}</div>
+          <button className="profile-close" onClick={onClose} aria-label={t('close')}>×</button>
+        </header>
       <section className="profile-settings">
         <h3>{t('account')}</h3>
         <label>
@@ -216,6 +218,7 @@ export default function ProfileDashboard({ visible, onClose, token }) {
         {t('logout')}
       </button>
     </div>
+    </>
   );
 
   // Full History Modal - rendered via portal to center on page
