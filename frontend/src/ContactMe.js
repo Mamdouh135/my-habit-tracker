@@ -1,5 +1,6 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useContext } from 'react';
 import emailjs from '@emailjs/browser';
+import { AuthContext } from './AuthContext';
 
 const EMAILJS_SERVICE_ID = 'service_p1h0j0t';
 const EMAILJS_TEMPLATE_ID = 'template_s5km4ws';
@@ -11,6 +12,7 @@ const MIN_SUBMIT_TIME = 3000;
 const RATE_LIMIT_TIME = 60000;
 
 export default function ContactMe() {
+  const { userProfile } = useContext(AuthContext);
   const [email, setEmail] = useState('');
   const [message, setMessage] = useState('');
   const [sent, setSent] = useState(false);
@@ -68,10 +70,12 @@ export default function ContactMe() {
 
     setSending(true);
     try {
+      const username = userProfile?.username || userProfile?.name || 'Guest';
       await emailjs.send(
         EMAILJS_SERVICE_ID,
         EMAILJS_TEMPLATE_ID,
         {
+          from_name: username,
           from_email: email || 'Anonymous',
           message: message,
         },
