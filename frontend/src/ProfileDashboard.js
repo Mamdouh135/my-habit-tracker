@@ -6,6 +6,19 @@ export default function ProfileDashboard({ visible, onClose, token }) {
   const [habits, setHabits] = useState([]);
   const [completions, setCompletions] = useState({});
   const [loading, setLoading] = useState(false);
+  const [history, setHistory] = useState([]);
+  const [editMode, setEditMode] = useState(false);
+
+  const loadHistory = () => {
+    const json = localStorage.getItem('habitHistory');
+    try { setHistory(json ? JSON.parse(json) : []); } catch { setHistory([]); }
+  };
+  const removeHistoryAt = idx => {
+    const h = [...history];
+    h.splice(idx,1);
+    localStorage.setItem('habitHistory', JSON.stringify(h));
+    setHistory(h);
+  };
 
   // fetch habits and their completions when drawer opens or on explicit refresh
   const fetchData = () => {
@@ -30,7 +43,10 @@ export default function ProfileDashboard({ visible, onClose, token }) {
   };
 
   useEffect(() => {
-    if (visible) fetchData();
+    if (visible) {
+      fetchData();
+      loadHistory();
+    }
   }, [visible, token]);
 
   // refresh whenever habits are updated elsewhere
@@ -42,11 +58,7 @@ export default function ProfileDashboard({ visible, onClose, token }) {
     return () => window.removeEventListener('habitUpdated', handler);
   }, [visible, token]);
 
-  // derive history entries
-  const historyEntries = habits.map(h => {
-    const done = completions[h.id];
-    return `${h.name} - ${done ? 'Completed' : 'Pending'}`;
-  });
+  // (no derived entries any more) history comes from localStorage
 
   const badges = [
     { key: '7day', title: '7-Day Warrior', rule: hs => hs.filter(h => completions[h.id]).length >= 7 },
@@ -75,14 +87,20 @@ export default function ProfileDashboard({ visible, onClose, token }) {
       </section>
       <section className="profile-history">
         <h3>History</h3>
+        <button className="edit-history-toggle" onClick={() => setEditMode(m => !m)}>
+          {editMode ? 'Done' : 'Edit History'}
+        </button>
         <div className="history-list">
           {loading ? <div>Loading...</div> : (
-            historyEntries.length === 0 ? (
-              <div className="history-empty">No habits yet.</div>
+            history.length === 0 ? (
+              <div className="history-empty">No entries.</div>
             ) : (
-              historyEntries.map((h, idx) => (
+              history.map((h, idx) => (
                 <div key={idx} className="history-item">
                   {h}
+                  {editMode && (
+                    <button className="history-delete-btn" onClick={() => removeHistoryAt(idx)}>✖</button>
+                  )}
                 </div>
               ))
             )
