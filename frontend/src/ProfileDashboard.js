@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect, useContext, useRef } from 'react';
 import { getHabits, getCompletions } from './api';
 import { AuthContext } from './AuthContext';
 import './ProfileDashboard.css';
@@ -72,6 +72,7 @@ export default function ProfileDashboard({ visible, onClose, token }) {
   const [avatarInput, setAvatarInput] = useState('');
   const [avatarFile, setAvatarFile] = useState(null);
   const [avatarPreview, setAvatarPreview] = useState('');
+  const fileInputRef = useRef(null);
 
   // helper to convert data uri -> blob URL
   const dataUriToBlobUrl = (uri) => {
@@ -139,19 +140,28 @@ export default function ProfileDashboard({ visible, onClose, token }) {
           Name:
           <input type="text" value={nameInput} onChange={e=>setNameInput(e.target.value)} />
         </label>
-        <label>
-          Change avatar:
-          <input type="file" accept="image/*" onChange={handleFileChange} />
-        </label>
-        <label>
-          Avatar URL/data URI:
-          <input type="password" value={avatarInput} onChange={e=>setAvatarInput(e.target.value)} />
-        </label>
-        {avatarPreview && (
-          <div className="avatar-preview">
-            <img src={avatarPreview} alt="avatar preview" style={{width:'64px',height:'64px',borderRadius:'50%'}} />
-          </div>
-        )}
+          <div className="avatar-control">
+          <img
+            src={avatarPreview || 'https://via.placeholder.com/80?text=?'}
+            alt="avatar preview"
+            className="avatar-preview-large"
+            onClick={() => fileInputRef.current && fileInputRef.current.click()}
+            title="Click to change avatar"
+          />
+          <button
+            type="button"
+            className="avatar-change-btn"
+            onClick={() => fileInputRef.current && fileInputRef.current.click()}
+            aria-label="Change avatar"
+          >✎</button>
+          <input
+            type="file"
+            accept="image/*"
+            ref={fileInputRef}
+            onChange={handleFileChange}
+            style={{ display: 'none' }}
+          />
+        </div>
         <button className="profile-save-btn" onClick={saveProfile}>Save</button>
       </section>
       <section className="profile-badges">

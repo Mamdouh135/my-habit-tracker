@@ -178,6 +178,44 @@ body.dark .history-item {
   justify-content: space-between;
   align-items: center;
 }
+
+/* avatar editing */
+.avatar-control {
+  position: relative;
+  width: 80px;
+  height: 80px;
+  margin-bottom: 12px;
+}
+.avatar-preview-large {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+  cursor: pointer;
+  border: 2px solid #6366f1;
+}
+.avatar-change-btn {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  background: #6366f1;
+  color: #fff;
+  border: none;
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 0.8rem;
+  transition: background 0.2s;
+}
+.avatar-change-btn:hover {
+  background: #4f46e5;
+}
+
+/* hide label or shrink it */
 .history-delete-btn {
   background: transparent;
   border: none;
