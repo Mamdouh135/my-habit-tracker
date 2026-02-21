@@ -86,6 +86,13 @@ function App() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  // Close profile drawer when user logs out
+  useEffect(() => {
+    if (!token) {
+      toggleProfile(false);
+    }
+  }, [token]);
+
   // Reflect localStorage flag into React state and auto-open tutorial after first login
   React.useEffect(() => {
     const shouldShow = !!(token && localStorage.getItem('showGetStarted') === 'true' && localStorage.getItem('tutorialSeen') !== 'true');
