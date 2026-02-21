@@ -1,49 +1,62 @@
-import React, { useContext, useState, useRef } from 'react';
+import React, { useContext, useState, useRef, useEffect } from 'react';
 import { AuthContext } from './AuthContext';
 import LoginRegister from './LoginRegister';
 import Habits from './Habits';
 import AboutMe from './AboutMe';
 import ContactMe from './ContactMe';
+import Hero from './Hero';
 import Tutorial from './Tutorial';
-import { getMe, resetTutorial } from './api';
+import ProfileDashboard from './ProfileDashboard';
 function App() {
   const { token } = useContext(AuthContext);
   const [page, setPage] = useState('home');
   const [dark, setDark] = useState(false);
+  const [authInitial, setAuthInitial] = useState(null); // 'register' | 'login' | null
   const [showTutorial, setShowTutorial] = useState(false);
-  const [tutorialSeen, setTutorialSeen] = useState(!!localStorage.getItem('tutorialSeen'));
+  const [showGetStartedFlag, setShowGetStartedFlag] = useState(false);
+  const [showBackToTop, setShowBackToTop] = useState(false);
+  const [showProfile, setShowProfile] = useState(false);
   const contactRef = useRef(null);
+
+  // hero section visibility (persistent per user)
+  const [heroVisible, setHeroVisible] = useState(() => {
+    return localStorage.getItem('hideHero') !== 'true';
+  });
+
+  const hideHero = () => {
+    setHeroVisible(false);
+    localStorage.setItem('hideHero', 'true');
+  };
 
   React.useEffect(() => {
     document.body.classList.toggle('dark', dark);
   }, [dark]);
 
-  // Sync server/local tutorialSeen state and show the initial 'Get Started' prompt bubble (NOT auto-opening tutorial)
-  React.useEffect(() => {
-    const sync = async () => {
-      if (!token) {
-        const seenLocal = localStorage.getItem('tutorialSeen') === 'true';
-        setTutorialSeen(seenLocal);
-        return;
-      }
-
-      try {
-        const res = await getMe(token);
-        const serverSeen = !!res.data?.tutorialSeen;
-        if (serverSeen) {
-          localStorage.setItem('tutorialSeen', 'true');
-          setTutorialSeen(true);
-          return;
-        }
-      } catch (e) {
-        // server unavailable, fall back to localStorage
-      }
-
-      const seenLocal = localStorage.getItem('tutorialSeen') === 'true';
-      setTutorialSeen(seenLocal);
-      // do NOT auto-open tutorial; instead show the top-left prompt bubble (render logic uses `tutorialSeen`)
+  // Back to Top button scroll detection
+  useEffect(() => {
+    const handleScroll = () => {
+      const scrollPosition = window.scrollY || window.pageYOffset;
+      setShowBackToTop(scrollPosition > 200);
     };
-    sync();
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  // Reflect localStorage flag into React state and auto-open tutorial after first login
+  React.useEffect(() => {
+    const shouldShow = !!(token && localStorage.getItem('showGetStarted') === 'true' && localStorage.getItem('tutorialSeen') !== 'true');
+    setShowGetStartedFlag(shouldShow);
+    
+    // Check for immediate tutorial trigger (set during registration)
+    const autoShow = localStorage.getItem('autoShowTutorial') === 'true';
+    if (token && (shouldShow || autoShow)) {
+      // Small delay to ensure Habits component renders first
+      setTimeout(() => {
+        setShowTutorial(true);
+        localStorage.removeItem('autoShowTutorial');
+      }, 600);
+    }
   }, [token]);
 
   const handleScrollToContact = () => {
@@ -52,43 +65,40 @@ function App() {
     }
   };
 
-  const promptVisible = !!(token && !tutorialSeen); // first-time login prompt
-  const promptActive = promptVisible && !showTutorial; // hide prompt while tutorial overlay is open
+  const handleBackToTop = () => {
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth'
+    });
+  };
 
   return (
-    <div id="layout" className={promptActive ? 'tutorial-prompt-active' : ''}>
+    <div id="layout">
       <header className="site-header">
-        <div className="header-logo">🌱</div>
-        <div className="header-title">Habit Tracker SaaS</div>
-        <div className="header-subtitle">Track your habits, grow your life</div>
-        <button className="header-contact-btn" onClick={handleScrollToContact}>Contact Me</button>
-      </header>
-      {/* Centered Get Started prompt for first-time logged-in users */}
-      {promptActive && (
-        <div className="getstarted-center" role="dialog" aria-modal="true">
-          <div className="getstarted-card">
-            <h2>Welcome — Get Started</h2>
-            <p className="muted">A short walkthrough will show how to add and complete habits.</p>
-            <div className="getstarted-actions">
-              <button className="getstarted-btn" onClick={() => setShowTutorial(true)}>Get Started</button>
-            </div>
-          </div>
+        <div className="header-left">
+          <div className="header-logo">🌱</div>
+          <button className="header-contact-btn" onClick={handleScrollToContact}>Contact Me</button>
         </div>
-      )}
-
-      {/* replay bubble — shown after tutorial was seen so user can re-open it */}
-      {token && tutorialSeen && (
-        <div style={{display:'flex',flexDirection:'column',gap:8}}>
-          <button
-            className={`tutorial-replay replay`}
-            title={'Show tutorial'}
-            aria-label={'Show tutorial'}
-            onClick={() => setShowTutorial(true)}
-          >
-            🛈
+        <div className="header-center">
+          <div className="header-title">Habit Tracker SaaS</div>
+          <div className="header-subtitle">Track your habits, grow your life</div>
+        </div>
+        <div className="header-right">
+          <button className="header-profile-btn" onClick={() => setShowProfile(true)} title="Profile" aria-label="Profile">
+            <img src="https://i.pravatar.cc/32?u=habit-tracker" alt="profile" className="header-profile-avatar" />
           </button>
-          <button className="tutorial-reset" onClick={async () => { try { await resetTutorial(token); localStorage.removeItem('tutorialSeen'); setTutorialSeen(false); } catch(e){ /* ignore */ } }} title="Reset tutorial">Reset</button>
         </div>
+      </header>
+      {heroVisible && (
+        <Hero
+          contactRef={contactRef}
+          setPage={setPage}
+          token={token}
+          setAuthInitial={setAuthInitial}
+          showGetStarted={showGetStartedFlag}
+          openTutorial={() => setShowTutorial(true)}
+          onDismiss={hideHero}
+        />
       )}
       <div className="main-wrapper">
         <aside className="sidebar">
@@ -100,18 +110,42 @@ function App() {
           </button>
         </aside>
         <main className="main-content">
-          {page === 'about' ? <AboutMe /> : (token ? <Habits /> : <LoginRegister />)}
+          {page === 'about' ? <AboutMe /> : (token ? <Habits /> : <LoginRegister initial={authInitial} />)}
+          
+
           {/* ContactMe at end of landing page */}
           <div ref={contactRef} id="contact-section">
             <ContactMe />
           </div>
         </main>
         {/* Render tutorial at root level so it truly pops up above everything */}
-          <Tutorial visible={showTutorial} onClose={() => { setShowTutorial(false); setTutorialSeen(true); }} token={token} setPage={setPage} />
+        <Tutorial visible={showTutorial} onClose={() => setShowTutorial(false)} />
+        <ProfileDashboard visible={showProfile} onClose={() => setShowProfile(false)} token={token} />
       </div>
+      {/* Help button to re-open tutorial (always visible when logged in) */}
+      {token && !showTutorial && (
+        <button
+          className="tutorial-help-btn"
+          onClick={() => setShowTutorial(true)}
+          title="Show tutorial"
+          aria-label="Show tutorial"
+        >
+          ?
+        </button>
+      )}
       <footer className="site-footer">
         &copy; {new Date().getFullYear()} Habit Tracker SaaS. All rights reserved. | Created by Mamdouh
       </footer>
+      
+      {/* Back to Top Button */}
+      <button
+        className={`back-to-top-button ${showBackToTop ? 'visible' : 'hidden'}`}
+        onClick={handleBackToTop}
+        aria-label="Back to top"
+        title="Back to top"
+      >
+        ↑
+      </button>
     </div>
   );
 }

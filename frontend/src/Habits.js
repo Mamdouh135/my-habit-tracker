@@ -52,13 +52,19 @@ export default function Habits() {
       <h2>Your Habits</h2>
       <button className="logout-btn" onClick={logout}>Logout</button>
       <div className="add-habit-row">
-        <input className="add-habit-input" placeholder="New habit" value={newHabit} onChange={e => setNewHabit(e.target.value)} />
+        <input
+          className="add-habit-input"
+          placeholder="New habit"
+          value={newHabit}
+          onChange={e => setNewHabit(e.target.value)}
+          onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); handleAdd(); } }}
+        />
         <button className="add-habit-btn" onClick={handleAdd}>Add</button>
       </div>
       {error && <div className="error">{error}</div>}
       <ul>
         {habits.map(habit => (
-          <li key={habit.id}>
+          <li key={habit.id} className="habit-item">
             <span className="habit-name">{habit.name}</span>
             <div className="habit-actions">
               <button className="habit-delete-btn" onClick={() => handleDelete(habit.id)} title="Delete"><span role="img" aria-label="delete">🗑️</span> Delete</button>

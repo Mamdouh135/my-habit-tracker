@@ -30,17 +30,5 @@ export async function initDb() {
       FOREIGN KEY(habitId) REFERENCES habits(id)
     );
   `);
-
-  // add `tutorialSeen` column to users if missing (safe for existing DB)
-  const tableSql = (await db.get("SELECT sql FROM sqlite_master WHERE tbl_name='users' AND type='table'"))?.sql || '';
-  if (!/tutorialSeen/i.test(tableSql)) {
-    try {
-      await db.exec(`ALTER TABLE users ADD COLUMN tutorialSeen INTEGER DEFAULT 0`);
-    } catch (e) {
-      // ignore if unable to alter (e.g., older DB state)
-      console.warn('Could not add tutorialSeen column to users table:', e.message || e);
-    }
-  }
-
   return db;
 }

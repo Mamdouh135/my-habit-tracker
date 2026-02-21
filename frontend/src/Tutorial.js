@@ -1,151 +1,327 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { setTutorialSeen } from './api';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 
-// Helper: find element with retry
-function findElement(selector, attempts = 12, interval = 120) {
-  return new Promise(resolve => {
-    let i = 0;
-    const tick = () => {
-      const el = document.querySelector(selector);
-      if (el) return resolve(el);
-      i += 1;
-      if (i >= attempts) return resolve(null);
-      setTimeout(tick, interval);
-    };
-    tick();
-  });
-}
-
-export default function Tutorial({ visible, onClose, token, setPage }) {
+export default function Tutorial({ visible, onClose }) {
   const [step, setStep] = useState(0);
-  const [pointer, setPointer] = useState(null); // {top,left,width,height,placement}
-  const finishBtnRef = useRef(null);
+  const [highlight, setHighlight] = useState(null);
+  const retryCountRef = useRef(0);
+  const currentTargetRef = useRef(null);
 
-  const interactiveSteps = [
+  // Steps: user must perform each action to advance
+  const steps = [
     {
-      title: 'Welcome',
-      body: 'This quick interactive tour shows how to add and complete habits.'
-    },
-    {
-      title: 'Add a Habit',
-      body: 'Type a short habit name in this field.',
+      title: 'Type a Habit',
+      body: 'Type a habit in the input box below. Try "Brush your teeth" as a suggestion!',
       selector: '.add-habit-input',
-      placement: 'right',
-      page: 'home'
+      waitFor: 'input',
+      placement: 'bottom'
     },
     {
-      title: 'Save the Habit',
-      body: 'Click the Add button to save your habit.',
+      title: 'Add the Habit',
+      body: 'Click the "Add" button to save your habit.',
       selector: '.add-habit-btn',
-      placement: 'bottom',
-      page: 'home'
+      waitFor: 'habitAdded',
+      placement: 'bottom'
     },
     {
-      title: 'Mark Complete',
-      body: 'Tap the mark-as-done button to record a completion for today.',
+      title: 'Mark as Done',
+      body: 'Click "Mark as done" to complete the habit for today.',
       selector: '.habit-complete-btn',
-      placement: 'left',
-      page: 'home'
+      waitFor: 'habitCompleted',
+      placement: 'top'
+    },
+    {
+      title: 'Delete the Habit',
+      body: 'Click "Delete" to remove the habit.',
+      selector: '.habit-delete-btn',
+      waitFor: 'habitDeleted',
+      placement: 'top'
     }
   ];
 
+  const finish = useCallback(() => {
+    // Remove highlight class from any element
+    if (currentTargetRef.current) {
+      currentTargetRef.current.classList.remove('tutorial-target-active');
+      currentTargetRef.current = null;
+    }
+    try {
+      localStorage.setItem('tutorialSeen', 'true');
+      localStorage.removeItem('showGetStarted');
+    } catch (e) {}
+    onClose();
+  }, [onClose]);
+
+  // Add highlight class to target element and update position
+  const highlightElement = useCallback((el, placement) => {
+    // Remove from previous element
+    if (currentTargetRef.current && currentTargetRef.current !== el) {
+      currentTargetRef.current.classList.remove('tutorial-target-active');
+    }
+    
+    if (el) {
+      el.classList.add('tutorial-target-active');
+      currentTargetRef.current = el;
+      
+      const rect = el.getBoundingClientRect();
+      setHighlight({
+        top: rect.top,
+        left: rect.left,
+        width: rect.width,
+        height: rect.height,
+        placement: placement || 'bottom'
+      });
+    }
+  }, []);
+
+  // Recalculate highlight position (for scroll/resize)
+  const recalculateHighlight = useCallback((currentStep) => {
+    const s = steps[currentStep];
+    if (!s?.selector) return;
+    const el = document.querySelector(s.selector);
+    if (!el) return;
+    highlightElement(el, s.placement);
+  }, [steps, highlightElement]);
+
+  // Position highlight box around the target element (with retry and scroll)
+  const updateHighlight = useCallback((currentStep) => {
+    const s = steps[currentStep];
+    if (!s?.selector) {
+      setHighlight(null);
+      return;
+    }
+    const el = document.querySelector(s.selector);
+    if (!el) {
+      // Retry up to 15 times with 150ms delay
+      if (retryCountRef.current < 15) {
+        retryCountRef.current++;
+        setTimeout(() => updateHighlight(currentStep), 150);
+      }
+      return;
+    }
+    retryCountRef.current = 0;
+    
+    // Scroll into view then highlight
+    el.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'center' });
+    
+    setTimeout(() => {
+      highlightElement(el, s.placement);
+    }, 250);
+  }, [steps, highlightElement]);
+
+  // Watch for user completing the current step's action
+  useEffect(() => {
+    if (!visible) return;
+
+    const s = steps[step];
+    if (!s) return;
+
+    let observer = null;
+    let intervalId = null;
+    let initialHabitCount = document.querySelectorAll('ul li').length;
+
+    const advanceStep = () => {
+      if (step < steps.length - 1) {
+        setStep(prev => prev + 1);
+      } else {
+        finish();
+      }
+    };
+
+    const checkCondition = () => {
+      switch (s.waitFor) {
+        case 'input': {
+          const input = document.querySelector('.add-habit-input');
+          if (input && input.value.trim().length > 0) {
+            advanceStep();
+            return true;
+          }
+          break;
+        }
+        case 'habitAdded': {
+          const currentCount = document.querySelectorAll('ul li').length;
+          if (currentCount > initialHabitCount) {
+            advanceStep();
+            return true;
+          }
+          break;
+        }
+        case 'habitCompleted': {
+          const doneIndicator = document.querySelector('.habit-done');
+          if (doneIndicator) {
+            advanceStep();
+            return true;
+          }
+          break;
+        }
+        case 'habitDeleted': {
+          const currentCount = document.querySelectorAll('ul li').length;
+          if (currentCount < initialHabitCount || (initialHabitCount > 0 && currentCount === 0)) {
+            finish();
+            return true;
+          }
+          break;
+        }
+        default:
+          break;
+      }
+      return false;
+    };
+
+    // Use MutationObserver for immediate DOM change detection
+    observer = new MutationObserver(() => {
+      checkCondition();
+    });
+    
+    observer.observe(document.body, {
+      childList: true,
+      subtree: true,
+      attributes: true,
+      characterData: true
+    });
+
+    // Poll for input changes (MutationObserver doesn't catch input value changes well)
+    if (s.waitFor === 'input') {
+      intervalId = setInterval(checkCondition, 100);
+    }
+
+    return () => {
+      if (observer) observer.disconnect();
+      if (intervalId) clearInterval(intervalId);
+    };
+  }, [visible, step, finish, steps]);
+
+  // Update highlight when step changes
+  useEffect(() => {
+    if (visible) {
+      retryCountRef.current = 0;
+      updateHighlight(step);
+      
+      const handleUpdate = () => recalculateHighlight(step);
+      window.addEventListener('scroll', handleUpdate);
+      window.addEventListener('resize', handleUpdate);
+      return () => {
+        window.removeEventListener('scroll', handleUpdate);
+        window.removeEventListener('resize', handleUpdate);
+      };
+    }
+  }, [visible, step, updateHighlight, recalculateHighlight]);
+
+  // Reset step when opening, cleanup when closing
   useEffect(() => {
     if (visible) {
       setStep(0);
-      setPointer(null);
-      document.body.style.overflow = 'hidden';
-      setTimeout(() => finishBtnRef.current?.focus(), 120);
-      return () => { document.body.style.overflow = ''; };
+      setHighlight(null);
+      retryCountRef.current = 0;
+    } else {
+      if (currentTargetRef.current) {
+        currentTargetRef.current.classList.remove('tutorial-target-active');
+        currentTargetRef.current = null;
+      }
     }
   }, [visible]);
 
-  // when step changes, if it has a selector, try to locate and position the pointer/highlight
-  useEffect(() => {
-    if (!visible) return;
-    const s = interactiveSteps[step];
-    let cancelled = false;
-
-    (async () => {
-      setPointer(null);
-      if (s?.page && setPage) setPage(s.page);
-      if (!s?.selector) return;
-      const el = await findElement(s.selector);
-      if (!el || cancelled) return;
-      // scroll into view then compute rect
-      el.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'center' });
-      await new Promise(r => setTimeout(r, 200));
-      const rect = el.getBoundingClientRect();
-      const pointerBox = {
-        top: rect.top + window.scrollY,
-        left: rect.left + window.scrollX,
-        width: rect.width,
-        height: rect.height,
-        placement: s.placement || 'top'
-      };
-      setPointer(pointerBox);
-    })();
-
-    return () => { cancelled = true; };
-  }, [step, visible]);
-
   if (!visible) return null;
-
-  const steps = interactiveSteps;
-
-  const finish = async () => {
-    try {
-      localStorage.setItem('tutorialSeen', 'true');
-      if (token) {
-        try { await setTutorialSeen(token); } catch (e) {}
-      }
-    } catch (e) {}
-    onClose();
-  };
 
   const s = steps[step];
 
+  // Calculate card position - smart positioning to never go off screen
+  const cardWidth = 300;
+  const cardHeight = 160;
+  const padding = 20;
+  
+  let cardStyle = {
+    position: 'fixed',
+    zIndex: 100001,
+    width: cardWidth + 'px'
+  };
+  
+  if (highlight) {
+    const vw = window.innerWidth;
+    const vh = window.innerHeight;
+    
+    // Calculate available space in each direction
+    const spaceAbove = highlight.top - padding;
+    const spaceBelow = vh - (highlight.top + highlight.height) - padding;
+    const spaceLeft = highlight.left - padding;
+    const spaceRight = vw - (highlight.left + highlight.width) - padding;
+    
+    // Determine best position based on available space
+    let bestPosition = 'below'; // default
+    
+    if (spaceBelow >= cardHeight + 20) {
+      bestPosition = 'below';
+    } else if (spaceAbove >= cardHeight + 20) {
+      bestPosition = 'above';
+    } else if (spaceRight >= cardWidth + 20) {
+      bestPosition = 'right';
+    } else if (spaceLeft >= cardWidth + 20) {
+      bestPosition = 'left';
+    } else {
+      // Fallback: position at top-left corner of viewport
+      bestPosition = 'corner';
+    }
+    
+    switch (bestPosition) {
+      case 'below':
+        cardStyle.top = highlight.top + highlight.height + 20;
+        cardStyle.left = Math.max(padding, Math.min(highlight.left, vw - cardWidth - padding));
+        break;
+      case 'above':
+        cardStyle.top = highlight.top - cardHeight - 20;
+        cardStyle.left = Math.max(padding, Math.min(highlight.left, vw - cardWidth - padding));
+        break;
+      case 'right':
+        cardStyle.top = Math.max(padding, Math.min(highlight.top, vh - cardHeight - padding));
+        cardStyle.left = highlight.left + highlight.width + 20;
+        break;
+      case 'left':
+        cardStyle.top = Math.max(padding, Math.min(highlight.top, vh - cardHeight - padding));
+        cardStyle.left = highlight.left - cardWidth - 20;
+        break;
+      case 'corner':
+      default:
+        cardStyle.top = padding;
+        cardStyle.left = padding;
+        break;
+    }
+  } else {
+    // Center the card if no highlight yet
+    cardStyle.top = '50%';
+    cardStyle.left = '50%';
+    cardStyle.transform = 'translate(-50%, -50%)';
+  }
+
   return (
     <>
-      <div className="tutorial-overlay" role="dialog" aria-modal="true">
-        {pointer && (
-          <>
-            <div
-              className="tutorial-highlight"
-              style={{
-                top: pointer.top - 8,
-                left: pointer.left - 8,
-                width: pointer.width + 16,
-                height: pointer.height + 16
-              }}
-            />
-            <div
-              className={`tutorial-pointer tutorial-pointer-${pointer.placement}`}
-              style={{
-                top: (pointer.placement === 'bottom') ? (pointer.top + pointer.height + 12) : (pointer.top - 12),
-                left: pointer.left + pointer.width / 2
-              }}
-            >
-              <div className="tutorial-pointer-label">{s.title}</div>
-            </div>
-          </>
-        )}
+      {/* Light overlay that allows interaction */}
+      <div className="tutorial-overlay-light" />
 
-        <div className="tutorial-card" role="document" style={{ zIndex: 13000 }}>
-          <div className="tutorial-header">
-            <div className="tutorial-step">Step {step + 1} / {steps.length}</div>
-            <button className="tutorial-skip" onClick={finish}>Skip</button>
-          </div>
-          <h3 className="tutorial-title">{s.title}</h3>
-          <p className="tutorial-body">{s.body}</p>
-          <div className="tutorial-actions">
-            <button disabled={step === 0} onClick={() => setStep(x => Math.max(0, x - 1))}>Back</button>
-            {step < steps.length - 1 ? (
-              <button onClick={() => setStep(x => Math.min(steps.length - 1, x + 1))}>Next</button>
-            ) : (
-              <button ref={finishBtnRef} className="finish" onClick={finish}>Finish</button>
-            )}
-          </div>
+      {/* Highlight box around target element */}
+      {highlight && (
+        <div
+          className="tutorial-highlight"
+          style={{
+            top: highlight.top - 6,
+            left: highlight.left - 6,
+            width: highlight.width + 12,
+            height: highlight.height + 12
+          }}
+        />
+      )}
+
+      {/* Instruction card */}
+      <div
+        className="tutorial-card tutorial-card--floating"
+        role="dialog"
+        aria-modal="false"
+        style={cardStyle}
+      >
+        <div className="tutorial-header">
+          <div className="tutorial-step">Step {step + 1} / {steps.length}</div>
+          <button className="tutorial-skip" onClick={finish}>Skip</button>
         </div>
+        <h3 className="tutorial-title">{s.title}</h3>
+        <p className="tutorial-body">{s.body}</p>
       </div>
     </>
   );

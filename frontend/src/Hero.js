@@ -1,8 +1,14 @@
 import React from 'react';
 
-export default function Hero({ contactRef, setPage, token, setAuthInitial }) {
+export default function Hero({ contactRef, setPage, token, setAuthInitial, showGetStarted, openTutorial, onDismiss }) {
   const handlePrimary = () => {
-    // behave like before: unauthenticated -> open register; authenticated -> go to app
+    // If user is logged-in and this is the first time, open the tutorial
+    if (token && showGetStarted) {
+      if (openTutorial) openTutorial();
+      return;
+    }
+
+    // Otherwise behave like before: unauthenticated -> open register; authenticated -> go to app
     if (!token) {
       if (setAuthInitial) setAuthInitial('register');
       setPage('home');
@@ -17,10 +23,15 @@ export default function Hero({ contactRef, setPage, token, setAuthInitial }) {
     <section className="hero-section">
       <div className="hero-inner">
         <div className="hero-copy">
+          {onDismiss && (
+            <button className="hero-dismiss" onClick={onDismiss} title="Hide this section forever" aria-label="Hide hero section">✖</button>
+          )}
           <h1>Build better habits. Live intentionally.</h1>
           <p className="hero-sub">A focused habit tracker with secure auth, effortless tracking, and a clean, futuristic interface designed to help you ship small wins every day.</p>
           <div className="hero-ctas">
-            <button className="hero-cta-primary" onClick={handlePrimary}>Get Started</button>
+            {showGetStarted && (
+              <button className="hero-cta-primary" onClick={handlePrimary}>Get Started</button>
+            )}
             <button className="hero-cta-secondary" onClick={handleSecondary}>Learn More</button>
           </div>
         </div>
