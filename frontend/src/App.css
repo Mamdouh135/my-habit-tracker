@@ -1355,3 +1355,388 @@ li {
 .back-to-top-button:active {
   transform: translateY(0) scale(0.95);
 }
+
+/* ================================
+   ROUTINES PAGE STYLES
+   ================================ */
+
+.routines-container {
+  padding: 24px;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.routines-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.routines-header h2 {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 1.8rem;
+  background: linear-gradient(135deg, var(--accent-cyan), var(--accent-purple));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin: 0;
+}
+
+.routines-icon {
+  font-size: 2rem;
+}
+
+.routines-progress {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--accent-cyan);
+}
+
+.progress-bar {
+  width: 120px;
+  height: 8px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--accent-cyan), var(--accent-purple));
+  border-radius: 4px;
+  transition: width 0.3s ease;
+}
+
+.add-routine-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 24px;
+  background: linear-gradient(135deg, var(--accent-cyan), var(--accent-purple));
+  color: #fff;
+  border: none;
+  border-radius: 12px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-bottom: 20px;
+}
+
+.add-routine-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0, 188, 212, 0.4);
+}
+
+.routine-form {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  padding: 24px;
+  margin-bottom: 24px;
+  backdrop-filter: blur(10px);
+}
+
+.routine-input {
+  width: 100%;
+  padding: 14px 18px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 2px solid rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  color: inherit;
+  font-size: 1rem;
+  margin-bottom: 16px;
+  transition: border-color 0.3s;
+}
+
+.routine-input:focus {
+  outline: none;
+  border-color: var(--accent-cyan);
+}
+
+.form-row {
+  margin-bottom: 16px;
+}
+
+.form-row label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 600;
+  color: var(--accent-cyan);
+}
+
+.time-input {
+  padding: 10px 14px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 2px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  color: inherit;
+  font-size: 1rem;
+}
+
+.time-input:focus {
+  outline: none;
+  border-color: var(--accent-cyan);
+}
+
+.category-selector {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.category-btn {
+  padding: 8px 16px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 2px solid rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
+  color: inherit;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.category-btn:hover {
+  border-color: var(--accent-cyan);
+}
+
+.category-btn.active {
+  background: linear-gradient(135deg, var(--accent-cyan), var(--accent-purple));
+  border-color: transparent;
+  color: #fff;
+}
+
+.days-selector {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.day-btn {
+  padding: 8px 12px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 2px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  color: inherit;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-width: 45px;
+}
+
+.day-btn:hover {
+  border-color: var(--accent-cyan);
+}
+
+.day-btn.active {
+  background: var(--accent-cyan);
+  border-color: var(--accent-cyan);
+  color: #000;
+}
+
+.save-routine-btn {
+  width: 100%;
+  padding: 14px;
+  background: linear-gradient(135deg, var(--accent-cyan), var(--accent-purple));
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-top: 8px;
+}
+
+.save-routine-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0, 188, 212, 0.4);
+}
+
+.today-label {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--accent-cyan);
+  margin-bottom: 16px;
+  padding-bottom: 8px;
+  border-bottom: 2px solid rgba(0, 188, 212, 0.3);
+}
+
+.no-routines {
+  text-align: center;
+  padding: 48px;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.no-routines span {
+  font-size: 3rem;
+  display: block;
+  margin-bottom: 12px;
+}
+
+.routine-group {
+  margin-bottom: 24px;
+}
+
+.group-header {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--accent-purple);
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.routine-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  margin-bottom: 8px;
+  transition: all 0.3s ease;
+}
+
+.routine-item:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(0, 188, 212, 0.3);
+}
+
+.routine-item.completed {
+  background: rgba(0, 188, 212, 0.1);
+  border-color: rgba(0, 188, 212, 0.3);
+}
+
+.routine-item.completed .routine-name {
+  text-decoration: line-through;
+  opacity: 0.7;
+}
+
+.routine-check {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: transparent;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  color: inherit;
+  font-size: 1.2rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.routine-check:hover {
+  border-color: var(--accent-cyan);
+  color: var(--accent-cyan);
+}
+
+.routine-item.completed .routine-check {
+  background: var(--accent-cyan);
+  border-color: var(--accent-cyan);
+  color: #000;
+}
+
+.routine-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.routine-name {
+  font-weight: 600;
+  font-size: 1rem;
+}
+
+.routine-time {
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.routine-delete {
+  background: transparent;
+  border: none;
+  font-size: 1.2rem;
+  cursor: pointer;
+  opacity: 0.5;
+  transition: all 0.2s ease;
+  padding: 8px;
+}
+
+.routine-delete:hover {
+  opacity: 1;
+  transform: scale(1.1);
+}
+
+.all-routines-section {
+  margin-top: 32px;
+  padding-top: 24px;
+  border-top: 2px solid rgba(255, 255, 255, 0.1);
+}
+
+.all-routines-section h3 {
+  font-size: 1.2rem;
+  color: var(--accent-purple);
+  margin-bottom: 16px;
+}
+
+.routine-overview-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 8px;
+  margin-bottom: 8px;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.routine-schedule {
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.routines-login-prompt {
+  text-align: center;
+  padding: 60px 24px;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.routines-login-prompt .routines-icon {
+  font-size: 4rem;
+  display: block;
+  margin-bottom: 16px;
+}
+
+/* RTL Support for Routines */
+html[dir="rtl"] .routine-info {
+  text-align: right;
+}
+
+html[dir="rtl"] .routine-item {
+  flex-direction: row-reverse;
+}
+
+html[dir="rtl"] .routines-header {
+  flex-direction: row-reverse;
+}
+
+html[dir="rtl"] .routine-overview-item {
+  flex-direction: row-reverse;
+}
+

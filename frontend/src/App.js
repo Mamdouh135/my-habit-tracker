@@ -8,6 +8,7 @@ import ContactMe from './ContactMe';
 import Hero from './Hero';
 import Tutorial from './Tutorial';
 import ProfileDashboard from './ProfileDashboard';
+import Routines from './Routines';
 function App() {
   const { token, userProfile } = useContext(AuthContext);
   const { language, toggleLanguage, t } = useLanguage();
@@ -164,13 +165,14 @@ function App() {
         <aside className="sidebar">
           <div className="sidebar-title">{t('navigation')}</div>
           <button className={`sidebar-link${page==='home'?' active':''}`} onClick={() => setPage('home')}>{t('home')}</button>
+          <button className={`sidebar-link${page==='routines'?' active':''}`} onClick={() => setPage('routines')}>{t('routines')}</button>
           <button className={`sidebar-link${page==='about'?' active':''}`} onClick={() => setPage('about')}>{t('aboutMe')}</button>
           <button className="sidebar-dark-toggle" onClick={() => setDark(d => !d)}>
             {dark ? t('lightMode') : t('darkMode')}
           </button>
         </aside>
         <main className="main-content">
-          {page === 'about' ? <AboutMe /> : (token ? <Habits /> : <LoginRegister initial={authInitial} />)}
+          {page === 'about' ? <AboutMe /> : page === 'routines' ? <Routines /> : (token ? <Habits /> : <LoginRegister initial={authInitial} />)}
           
 
           {/* ContactMe at end of landing page */}

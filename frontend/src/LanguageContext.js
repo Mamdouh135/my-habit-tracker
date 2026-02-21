@@ -116,6 +116,19 @@ const translations = {
     language: 'اللغة',
     arabic: 'العربية',
     english: 'English',
+    
+    // Routines
+    planRoutines: 'خطط روتينك',
+    routines: 'الروتين',
+    addRoutine: 'إضافة روتين',
+    routineName: 'اسم الروتين',
+    time: 'الوقت',
+    category: 'الفئة',
+    repeatOn: 'التكرار',
+    todaysRoutines: 'روتين اليوم',
+    noRoutinesToday: 'لا يوجد روتين مجدول لهذا اليوم',
+    allRoutines: 'جميع الروتينات',
+    cancel: 'إلغاء',
   },
   en: {
     // Header
@@ -232,6 +245,19 @@ const translations = {
     language: 'Language',
     arabic: 'العربية',
     english: 'English',
+    
+    // Routines
+    planRoutines: 'Plan Your Routines',
+    routines: 'Routines',
+    addRoutine: 'Add Routine',
+    routineName: 'Routine name',
+    time: 'Time',
+    category: 'Category',
+    repeatOn: 'Repeat on',
+    todaysRoutines: "Today's Routines",
+    noRoutinesToday: 'No routines scheduled for today',
+    allRoutines: 'All Routines',
+    cancel: 'Cancel',
   }
 };
 
