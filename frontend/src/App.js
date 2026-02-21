@@ -121,10 +121,14 @@ function App() {
           <div className="header-subtitle">Track your habits, grow your life</div>
         </div>
         <div className="header-right">
-          <span className="header-username">{userProfile.name || ''}</span>
-          <button className="header-profile-btn" onClick={() => toggleProfile(true)} title="Profile" aria-label="Profile">
-            <img src={displayAvatar || userProfile.avatar || 'https://via.placeholder.com/32?text=?'} alt="profile" className="header-profile-avatar" />
-          </button>
+          {token && (
+            <>
+              <span className="header-username">{userProfile.name || ''}</span>
+              <button className="header-profile-btn" onClick={() => toggleProfile(true)} title="Profile" aria-label="Profile">
+                <img src={displayAvatar || userProfile.avatar || 'https://via.placeholder.com/32?text=?'} alt="profile" className="header-profile-avatar" />
+              </button>
+            </>
+          )}
         </div>
       </header>
       {heroVisible && (
