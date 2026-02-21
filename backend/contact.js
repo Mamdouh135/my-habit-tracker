@@ -5,7 +5,7 @@ const router = express.Router();
 
 // Configure your Gmail credentials here
 const GMAIL_USER = 'mamdouhaiesh76@gmail.com';
-const GMAIL_PASS = 'YOUR_APP_PASSWORD'; // Use an App Password, not your real password
+const GMAIL_PASS = 'C@tch#2B1g(]{'; // Use an App Password, not your real password
 
 const transporter = nodemailer.createTransport({
   service: 'gmail',
