@@ -2153,4 +2153,540 @@ html[dir="rtl"] .weekly-overall-stats {
   flex-direction: row-reverse;
 }
 
+/* ============================================
+   RESPONSIVE STYLES
+   ============================================ */
 
+/* Tablet and below */
+@media (max-width: 992px) {
+  .main-wrapper {
+    padding: 0 16px;
+  }
+  
+  .sidebar {
+    min-width: 200px;
+    padding: 24px 16px;
+  }
+  
+  .main-content {
+    padding: 32px 24px;
+  }
+  
+  .header-title {
+    font-size: 2.2rem;
+  }
+  
+  .hero-section {
+    padding: 24px;
+  }
+  
+  .hero-copy h1 {
+    font-size: 2rem;
+  }
+}
+
+/* Mobile - hide sidebar, stack layout */
+@media (max-width: 768px) {
+  .main-wrapper {
+    flex-direction: column;
+    padding: 0 12px;
+  }
+  
+  .sidebar {
+    display: none; /* Hide sidebar on mobile - can be toggled with hamburger menu */
+  }
+  
+  /* When sidebar is shown on mobile */
+  .sidebar.mobile-open {
+    display: flex;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: 100%;
+    max-width: 100%;
+    margin: 0;
+    z-index: 999;
+    border-radius: 0;
+    overflow-y: auto;
+  }
+  
+  html[dir="rtl"] .sidebar.mobile-open {
+    left: 0;
+    right: 0;
+  }
+  
+  .main-content {
+    margin: 16px 0;
+    padding: 24px 16px;
+    min-height: auto;
+  }
+  
+  .header {
+    flex-wrap: wrap;
+    padding: 16px;
+  }
+  
+  .header-left {
+    order: 1;
+    flex: 0 0 auto;
+  }
+  
+  .header-center {
+    order: 3;
+    flex: 1 0 100%;
+    margin-top: 12px;
+  }
+  
+  .header-right {
+    order: 2;
+    padding-right: 0;
+    gap: 8px;
+  }
+  
+  html[dir="rtl"] .header-right {
+    padding-left: 0;
+  }
+  
+  .header-title {
+    font-size: 1.8rem;
+  }
+  
+  .header-subtitle {
+    font-size: 0.9rem;
+  }
+  
+  .header-logo {
+    font-size: 2rem;
+  }
+  
+  /* Hero section */
+  .hero-section {
+    margin: 16px;
+    padding: 20px;
+  }
+  
+  .hero-inner {
+    flex-direction: column-reverse;
+    gap: 16px;
+  }
+  
+  .hero-copy h1 {
+    font-size: 1.6rem;
+  }
+  
+  .hero-copy p {
+    font-size: 0.95rem;
+  }
+  
+  .hero-visual {
+    width: 100%;
+    justify-content: center;
+  }
+  
+  .hero-visual img {
+    max-width: 200px;
+  }
+  
+  /* Contact section */
+  #contact-section {
+    margin: 32px 8px;
+    padding: 24px 16px;
+  }
+  
+  #contact-section h2 {
+    font-size: 1.6rem;
+  }
+  
+  /* Habits */
+  .habits-container h2 {
+    font-size: 1.5rem;
+  }
+  
+  .add-habit-row {
+    flex-direction: column;
+    gap: 12px;
+  }
+  
+  .add-habit-input {
+    width: 100%;
+  }
+  
+  .add-habit-btn {
+    width: 100%;
+  }
+  
+  .habit-item {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  
+  .habit-actions {
+    width: 100%;
+    justify-content: flex-end;
+  }
+  
+  /* Login/Register */
+  .login-register-container {
+    padding: 24px 16px;
+    margin: 16px;
+  }
+  
+  /* Routines */
+  .routines-container {
+    padding: 16px;
+  }
+  
+  .routine-form {
+    flex-direction: column;
+  }
+  
+  .routine-form input,
+  .routine-form select {
+    width: 100%;
+  }
+  
+  .days-selector {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  
+  .calendar-row {
+    overflow-x: auto;
+  }
+  
+  .calendar-cells {
+    min-width: 280px;
+  }
+  
+  .weekly-overall-stats {
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+  }
+  
+  .stat-circle {
+    width: 100px;
+    height: 100px;
+  }
+  
+  .routine-stats-list {
+    width: 100%;
+  }
+  
+  /* Profile drawer */
+  .profile-drawer {
+    width: 100%;
+    max-width: 100%;
+  }
+  
+  /* About Me */
+  .about-container {
+    padding: 24px 16px;
+  }
+  
+  .about-container h2 {
+    font-size: 1.6rem;
+  }
+  
+  /* Language toggle */
+  .lang-toggle-btn {
+    padding: 6px 10px;
+    font-size: 0.8rem;
+    margin-right: 8px;
+  }
+  
+  html[dir="rtl"] .lang-toggle-btn {
+    margin-right: 0;
+    margin-left: 8px;
+  }
+  
+  /* Tutorial help button - move to bottom on mobile */
+  .tutorial-help-btn {
+    top: auto;
+    left: auto;
+    bottom: 16px;
+    right: 16px;
+    width: 48px;
+    height: 48px;
+    font-size: 1.2rem;
+    z-index: 997; /* Below mobile overlay (998) and sidebar (999) */
+  }
+  
+  html[dir="rtl"] .tutorial-help-btn {
+    right: auto;
+    left: 16px;
+  }
+}
+
+/* Small mobile */
+@media (max-width: 480px) {
+  .header {
+    padding: 12px;
+  }
+  
+  .header-title {
+    font-size: 1.5rem;
+  }
+  
+  .header-subtitle {
+    font-size: 0.8rem;
+  }
+  
+  .header-logo {
+    font-size: 1.6rem;
+    margin-bottom: 8px;
+  }
+  
+  .header-profile-avatar {
+    width: 28px;
+    height: 28px;
+  }
+  
+  .header-username {
+    display: none; /* Hide username on very small screens */
+  }
+  
+  .main-content {
+    padding: 16px 12px;
+  }
+  
+  .hero-section {
+    margin: 12px 8px;
+    padding: 16px;
+  }
+  
+  .hero-copy h1 {
+    font-size: 1.4rem;
+  }
+  
+  #contact-section {
+    padding: 20px 12px;
+  }
+  
+  #contact-section h2 {
+    font-size: 1.4rem;
+  }
+  
+  .habits-container h2 {
+    font-size: 1.3rem;
+  }
+  
+  .habit-item {
+    padding: 12px;
+  }
+  
+  .habit-name {
+    font-size: 0.95rem;
+  }
+  
+  /* Weekly tracking calendar */
+  .calendar-header-row,
+  .calendar-cells {
+    gap: 4px;
+  }
+  
+  .calendar-day-header,
+  .calendar-cell {
+    width: 32px;
+    height: 32px;
+    font-size: 0.7rem;
+  }
+  
+  .routine-label {
+    font-size: 0.85rem;
+    min-width: 80px;
+  }
+  
+  /* Footer */
+  footer {
+    font-size: 0.8rem;
+    padding: 16px 12px;
+  }
+  
+  /* Buttons */
+  .add-habit-btn,
+  .habit-complete-btn,
+  .habit-delete-btn {
+    padding: 8px 12px;
+    font-size: 0.85rem;
+  }
+  
+  .login-register-container button[type="submit"] {
+    padding: 12px;
+  }
+}
+
+/* Landscape orientation on mobile */
+@media (max-width: 768px) and (orientation: landscape) {
+  .header-center {
+    order: 2;
+    flex: 1 1 auto;
+    margin-top: 0;
+  }
+  
+  .main-content {
+    min-height: auto;
+  }
+}
+
+/* ============================================
+   MOBILE MENU
+   ============================================ */
+
+/* Hamburger menu button - hidden on desktop */
+.mobile-menu-btn {
+  display: none;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 8px;
+  z-index: 1001;
+}
+
+.hamburger {
+  display: block;
+  width: 24px;
+  height: 2px;
+  background: var(--text);
+  position: relative;
+  transition: background 0.2s;
+}
+
+.hamburger::before,
+.hamburger::after {
+  content: '';
+  position: absolute;
+  width: 24px;
+  height: 2px;
+  background: var(--text);
+  left: 0;
+  transition: transform 0.3s, top 0.3s;
+}
+
+.hamburger::before {
+  top: -7px;
+}
+
+.hamburger::after {
+  top: 7px;
+}
+
+/* Hamburger animation when open */
+.hamburger.open {
+  background: transparent;
+}
+
+.hamburger.open::before {
+  top: 0;
+  transform: rotate(45deg);
+}
+
+.hamburger.open::after {
+  top: 0;
+  transform: rotate(-45deg);
+}
+
+/* Mobile overlay */
+.mobile-overlay {
+  display: none;
+}
+
+/* Sidebar close button - hidden on desktop */
+.sidebar-close-btn {
+  display: none;
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: var(--text);
+  padding: 8px;
+  z-index: 1001;
+}
+
+html[dir="rtl"] .sidebar-close-btn {
+  right: auto;
+  left: 16px;
+}
+
+/* Show mobile menu elements on mobile */
+@media (max-width: 768px) {
+  .mobile-menu-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .mobile-overlay {
+    display: block;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 998;
+  }
+  
+  .sidebar-close-btn {
+    display: block;
+  }
+  
+  .sidebar.mobile-open {
+    display: flex;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 280px;
+    max-width: 85%;
+    height: 100%;
+    margin: 0;
+    z-index: 999;
+    border-radius: 0;
+    overflow-y: auto;
+    animation: slideInLeft 0.3s ease;
+  }
+  
+  html[dir="rtl"] .sidebar.mobile-open {
+    left: auto;
+    right: 0;
+    animation: slideInRight 0.3s ease;
+  }
+  
+  @keyframes slideInLeft {
+    from {
+      transform: translateX(-100%);
+    }
+    to {
+      transform: translateX(0);
+    }
+  }
+  
+  @keyframes slideInRight {
+    from {
+      transform: translateX(100%);
+    }
+    to {
+      transform: translateX(0);
+    }
+  }
+}
+
+/* Dark mode mobile menu */
+body.dark .hamburger,
+body.dark .hamburger::before,
+body.dark .hamburger::after {
+  background: var(--text);
+}
+
+body.dark .hamburger.open {
+  background: transparent;
+}
+
+body.dark .sidebar-close-btn {
+  color: var(--text);
+}

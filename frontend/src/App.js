@@ -54,6 +54,7 @@ function App() {
       return localStorage.getItem('showProfile') === 'true';
     } catch { return false; }
   });
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const toggleProfile = (v) => {
     setShowProfile(v);
@@ -129,6 +130,9 @@ function App() {
     <div id="layout">
       <header className="site-header">
         <div className="header-left">
+          <button className="mobile-menu-btn" onClick={() => setMobileMenuOpen(v => !v)} aria-label="Menu">
+            <span className={`hamburger ${mobileMenuOpen ? 'open' : ''}`}></span>
+          </button>
           <div className="header-logo">🌱</div>
           <button className="header-contact-btn" onClick={handleScrollToContact}>{t('contactMe')}</button>
         </div>
@@ -162,11 +166,13 @@ function App() {
         />
       )}
       <div className="main-wrapper">
-        <aside className="sidebar">
+        {mobileMenuOpen && <div className="mobile-overlay" onClick={() => setMobileMenuOpen(false)}></div>}
+        <aside className={`sidebar ${mobileMenuOpen ? 'mobile-open' : ''}`}>
+          <button className="sidebar-close-btn" onClick={() => setMobileMenuOpen(false)}>✕</button>
           <div className="sidebar-title">{t('navigation')}</div>
-          <button className={`sidebar-link${page==='home'?' active':''}`} onClick={() => setPage('home')}>{t('home')}</button>
-          <button className={`sidebar-link${page==='routines'?' active':''}`} onClick={() => setPage('routines')}>{t('routines')}</button>
-          <button className={`sidebar-link${page==='about'?' active':''}`} onClick={() => setPage('about')}>{t('aboutMe')}</button>
+          <button className={`sidebar-link${page==='home'?' active':''}`} onClick={() => { setPage('home'); setMobileMenuOpen(false); }}>{t('home')}</button>
+          <button className={`sidebar-link${page==='routines'?' active':''}`} onClick={() => { setPage('routines'); setMobileMenuOpen(false); }}>{t('routines')}</button>
+          <button className={`sidebar-link${page==='about'?' active':''}`} onClick={() => { setPage('about'); setMobileMenuOpen(false); }}>{t('aboutMe')}</button>
           <button className="sidebar-dark-toggle" onClick={() => setDark(d => !d)}>
             {dark ? t('lightMode') : t('darkMode')}
           </button>

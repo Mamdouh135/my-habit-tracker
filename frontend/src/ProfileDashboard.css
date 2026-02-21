@@ -368,3 +368,58 @@ body.dark .history-modal-actions {
 body.dark .history-modal-list .history-item {
   background: #374151;
 }
+
+/* Responsive styles for Profile Dashboard */
+@media (max-width: 768px) {
+  .profile-drawer {
+    width: 100%;
+    max-width: 100%;
+  }
+  
+  .profile-header {
+    padding: 16px;
+  }
+  
+  .profile-settings {
+    padding: 16px;
+  }
+  
+  .profile-badges,
+  .profile-history {
+    padding: 16px;
+  }
+  
+  .avatar-preview-large {
+    width: 70px;
+    height: 70px;
+  }
+  
+  .history-modal {
+    width: 95%;
+    max-height: 90vh;
+  }
+  
+  .history-modal-header {
+    padding: 12px 16px;
+  }
+  
+  .history-modal-list {
+    padding: 12px 16px;
+  }
+}
+
+@media (max-width: 480px) {
+  .profile-header h2 {
+    font-size: 1.2rem;
+  }
+  
+  .badge {
+    padding: 8px 10px;
+    font-size: 0.85rem;
+  }
+  
+  .profile-logout-btn {
+    padding: 10px 16px;
+    font-size: 0.9rem;
+  }
+}
