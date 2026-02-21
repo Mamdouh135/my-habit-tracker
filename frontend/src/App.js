@@ -10,7 +10,9 @@ import ProfileDashboard from './ProfileDashboard';
 function App() {
   const { token } = useContext(AuthContext);
   const [page, setPage] = useState('home');
-  const [dark, setDark] = useState(false);
+  const [dark, setDark] = useState(() => {
+    return localStorage.getItem('dark') === 'true';
+  });
   const [authInitial, setAuthInitial] = useState(null); // 'register' | 'login' | null
   const [showTutorial, setShowTutorial] = useState(false);
   const [showGetStartedFlag, setShowGetStartedFlag] = useState(false);
@@ -37,6 +39,7 @@ function App() {
 
   React.useEffect(() => {
     document.body.classList.toggle('dark', dark);
+    try { localStorage.setItem('dark', dark); } catch {};
   }, [dark]);
 
   // Back to Top button scroll detection
