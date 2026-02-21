@@ -7,6 +7,7 @@ export default function Tutorial({ visible, onClose }) {
   const [highlight, setHighlight] = useState(null);
   const retryCountRef = useRef(0);
   const currentTargetRef = useRef(null);
+  const timeoutIdsRef = useRef([]); // Track pending timeouts to cancel on close
 
   // Steps: user must perform each action to advance
   const steps = [
@@ -41,11 +42,20 @@ export default function Tutorial({ visible, onClose }) {
   ];
 
   const finish = useCallback(() => {
-    // Remove highlight class from any element
+    // Cancel all pending timeouts
+    timeoutIdsRef.current.forEach(id => clearTimeout(id));
+    timeoutIdsRef.current = [];
+    
+    // Remove highlight class from tracked element
     if (currentTargetRef.current) {
       currentTargetRef.current.classList.remove('tutorial-target-active');
       currentTargetRef.current = null;
     }
+    // Also remove from any element that might still have it
+    document.querySelectorAll('.tutorial-target-active').forEach(el => {
+      el.classList.remove('tutorial-target-active');
+    });
+    setHighlight(null);
     try {
       localStorage.setItem('tutorialSeen', 'true');
       localStorage.removeItem('showGetStarted');
@@ -96,7 +106,8 @@ export default function Tutorial({ visible, onClose }) {
       // Retry up to 15 times with 150ms delay
       if (retryCountRef.current < 15) {
         retryCountRef.current++;
-        setTimeout(() => updateHighlight(currentStep), 150);
+        const id = setTimeout(() => updateHighlight(currentStep), 150);
+        timeoutIdsRef.current.push(id);
       }
       return;
     }
@@ -105,9 +116,10 @@ export default function Tutorial({ visible, onClose }) {
     // Scroll into view then highlight
     el.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'center' });
     
-    setTimeout(() => {
+    const id = setTimeout(() => {
       highlightElement(el, s.placement);
     }, 250);
+    timeoutIdsRef.current.push(id);
   }, [steps, highlightElement]);
 
   // Watch for user completing the current step's action
@@ -214,11 +226,20 @@ export default function Tutorial({ visible, onClose }) {
       setStep(0);
       setHighlight(null);
       retryCountRef.current = 0;
+      timeoutIdsRef.current = [];
     } else {
+      // Cancel all pending timeouts
+      timeoutIdsRef.current.forEach(id => clearTimeout(id));
+      timeoutIdsRef.current = [];
+      
       if (currentTargetRef.current) {
         currentTargetRef.current.classList.remove('tutorial-target-active');
         currentTargetRef.current = null;
       }
+      // Also remove from any element that might still have it
+      document.querySelectorAll('.tutorial-target-active').forEach(el => {
+        el.classList.remove('tutorial-target-active');
+      });
     }
   }, [visible]);
 
