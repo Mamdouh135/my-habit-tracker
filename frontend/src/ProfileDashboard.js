@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { getHabits, getCompletions } from './api';
+import { AuthContext } from './AuthContext';
 import './ProfileDashboard.css';
 
 export default function ProfileDashboard({ visible, onClose, token }) {
@@ -65,12 +66,41 @@ export default function ProfileDashboard({ visible, onClose, token }) {
     { key: '30day', title: '30-Day Streak', rule: hs => hs.filter(h => completions[h.id]).length >= 30 }
   ];
 
+  const { updateProfile, userProfile } = useContext(AuthContext);
+
+  const [nameInput, setNameInput] = useState('');
+  const [avatarInput, setAvatarInput] = useState('');
+
+  // when profile opens populate inputs
+  useEffect(() => {
+    if (visible && userProfile) {
+      setNameInput(userProfile.name || '');
+      setAvatarInput(userProfile.avatar || '');
+    }
+  }, [visible, userProfile]);
+
+  const saveProfile = () => {
+    updateProfile({ name: nameInput, avatar: avatarInput });
+  };
+
   return (
     <div className={`profile-drawer${visible ? ' open' : ''}`}>      
       <header className="profile-header">
         <div className="profile-title">Your Profile</div>
         <button className="profile-close" onClick={onClose} aria-label="Close profile">×</button>
       </header>
+      <section className="profile-settings">
+        <h3>Account</h3>
+        <label>
+          Name:
+          <input type="text" value={nameInput} onChange={e=>setNameInput(e.target.value)} />
+        </label>
+        <label>
+          Avatar URL:
+          <input type="text" value={avatarInput} onChange={e=>setAvatarInput(e.target.value)} />
+        </label>
+        <button className="profile-save-btn" onClick={saveProfile}>Save</button>
+      </section>
       <section className="profile-badges">
         <h3>Success Badges</h3>
         <div className="badge-grid">

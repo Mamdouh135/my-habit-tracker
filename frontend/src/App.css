@@ -563,6 +563,17 @@ body.dark {
   flex-shrink: 0; /* prevent right group from being pushed out */
   padding-right: 64px; /* move group further left from right edge */
 }
+.header-username {
+  color: var(--text);
+  font-weight: 500;
+  margin-right: 4px;
+}
+
+@media (max-width: 600px) {
+  .header-right {
+    padding-right: 24px;
+  }
+}
 
 /* small screens: reduce padding so buttons remain accessible */
 @media (max-width: 600px) {

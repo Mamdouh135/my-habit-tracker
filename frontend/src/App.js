@@ -8,7 +8,7 @@ import Hero from './Hero';
 import Tutorial from './Tutorial';
 import ProfileDashboard from './ProfileDashboard';
 function App() {
-  const { token } = useContext(AuthContext);
+  const { token, userProfile } = useContext(AuthContext);
   const [page, setPage] = useState('home');
   const [dark, setDark] = useState(() => {
     return localStorage.getItem('dark') === 'true';
@@ -94,8 +94,9 @@ function App() {
           <div className="header-subtitle">Track your habits, grow your life</div>
         </div>
         <div className="header-right">
+          <span className="header-username">{userProfile.name || ''}</span>
           <button className="header-profile-btn" onClick={() => toggleProfile(true)} title="Profile" aria-label="Profile">
-            <img src="https://i.pravatar.cc/32?u=habit-tracker" alt="profile" className="header-profile-avatar" />
+            <img src={userProfile.avatar || 'https://via.placeholder.com/32?text=?'} alt="profile" className="header-profile-avatar" />
           </button>
         </div>
       </header>
