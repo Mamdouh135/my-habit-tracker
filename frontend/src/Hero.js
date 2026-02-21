@@ -1,6 +1,9 @@
 import React from 'react';
+import { useLanguage } from './LanguageContext';
 
 export default function Hero({ contactRef, setPage, token, setAuthInitial, showGetStarted, openTutorial, onDismiss }) {
+  const { t } = useLanguage();
+  
   const handlePrimary = () => {
     // If user is logged-in and this is the first time, open the tutorial
     if (token && showGetStarted) {
@@ -24,24 +27,24 @@ export default function Hero({ contactRef, setPage, token, setAuthInitial, showG
       <div className="hero-inner">
         <div className="hero-copy">
           {onDismiss && (
-            <button className="hero-dismiss" onClick={onDismiss} title="Hide this section forever" aria-label="Hide hero section">✖</button>
+            <button className="hero-dismiss" onClick={onDismiss} title={t('hideSection')} aria-label={t('hideSection')}>✖</button>
           )}
-          <h1>Build better habits. Live intentionally.</h1>
-          <p className="hero-sub">A focused habit tracker with secure auth, effortless tracking, and a clean, futuristic interface designed to help you ship small wins every day.</p>
+          <h1>{t('heroTitle')}</h1>
+          <p className="hero-sub">{t('heroSub')}</p>
           <div className="hero-ctas">
             {showGetStarted && (
-              <button className="hero-cta-primary" onClick={handlePrimary}>Get Started</button>
+              <button className="hero-cta-primary" onClick={handlePrimary}>{t('getStarted')}</button>
             )}
-            <button className="hero-cta-secondary" onClick={handleSecondary}>Learn More</button>
+            <button className="hero-cta-secondary" onClick={handleSecondary}>{t('learnMore')}</button>
           </div>
         </div>
         <div className="hero-visual">
           <div className="card-sample">
-            <div className="card-title">Today's routine</div>
+            <div className="card-title">{t('todayRoutine')}</div>
             <ul className="card-list">
-              <li>🧘 Morning meditation</li>
-              <li>📚 Read 20 pages</li>
-              <li>🏃 Exercise 20 min</li>
+              <li>{t('morningMeditation')}</li>
+              <li>{t('read20Pages')}</li>
+              <li>{t('exercise20Min')}</li>
             </ul>
           </div>
         </div>

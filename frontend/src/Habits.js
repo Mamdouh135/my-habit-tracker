@@ -1,10 +1,12 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { getHabits, addHabit, deleteHabit, completeHabit, getCompletions } from './api';
 import { AuthContext } from './AuthContext';
+import { useLanguage } from './LanguageContext';
 
 
 export default function Habits() {
   const { token, logout, userProfile } = useContext(AuthContext);
+  const { t } = useLanguage();
   const [habits, setHabits] = useState([]);
   const [newHabit, setNewHabit] = useState('');
   const [error, setError] = useState('');
@@ -25,7 +27,7 @@ export default function Habits() {
       setHabits(res.data);
       window.dispatchEvent(new Event('habitUpdated'));
     } catch (e) {
-      setError('Could not add habit');
+      setError(t('addError'));
     }
   };
 
@@ -66,17 +68,17 @@ export default function Habits() {
 
   return (
     <div>
-      <h2>Your Habits</h2>
-      <button className="logout-btn" onClick={logout}>Logout</button>
+      <h2>{t('yourHabits')}</h2>
+      <button className="logout-btn" onClick={logout}>{t('logout')}</button>
       <div className="add-habit-row">
         <input
           className="add-habit-input"
-          placeholder="New habit"
+          placeholder={t('newHabit')}
           value={newHabit}
           onChange={e => setNewHabit(e.target.value)}
           onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); handleAdd(); } }}
         />
-        <button className="add-habit-btn" onClick={handleAdd}>Add</button>
+        <button className="add-habit-btn" onClick={handleAdd}>{t('add')}</button>
       </div>
       {error && <div className="error">{error}</div>}
       <ul>
@@ -84,9 +86,9 @@ export default function Habits() {
           <li key={habit.id} className="habit-item">
             <span className="habit-name">{habit.name}</span>
             <div className="habit-actions">
-              <button className="habit-delete-btn" onClick={() => handleDelete(habit.id)} title="Delete"><span role="img" aria-label="delete">🗑️</span> Delete</button>
-              <button className="habit-complete-btn" onClick={() => handleComplete(habit.id)} disabled={completions[habit.id]} title="Mark as done"><span role="img" aria-label="done">✅</span> Mark as done</button>
-              {completions[habit.id] && <span className="habit-done" title="Completed">✔️</span>}
+              <button className="habit-delete-btn" onClick={() => handleDelete(habit.id)} title={t('delete')}><span role="img" aria-label="delete">🗑️</span> {t('delete')}</button>
+              <button className="habit-complete-btn" onClick={() => handleComplete(habit.id)} disabled={completions[habit.id]} title={t('completed')}><span role="img" aria-label="done">✅</span> {t('completed')}</button>
+              {completions[habit.id] && <span className="habit-done" title={t('completed')}>✔️</span>}
             </div>
           </li>
         ))}

@@ -1,14 +1,17 @@
 import React from 'react';
+import { useLanguage } from './LanguageContext';
 import './App.css';
 
 export default function AboutMe() {
+  const { t } = useLanguage();
+  
   return (
     <div className="app-container">
-      <h1>About Me</h1>
-      <p><strong>Name:</strong> Mamdouh</p>
-      <p><strong>Role:</strong> Engineer & Developer</p>
-      <p><strong>Education:</strong> Student at GUC (German University in Cairo)</p>
-      <p>I am passionate about building software solutions, learning new technologies, and solving real-world problems. As a GUC student and engineer, I strive to create impactful applications and continuously improve my skills as a developer.</p>
+      <h1>{t('aboutMeTitle')}</h1>
+      <p><strong>{t('nameLabel')}</strong> Mamdouh</p>
+      <p><strong>{t('position')}</strong> {t('positionValue')}</p>
+      <p><strong>{t('education')}</strong> {t('educationValue')}</p>
+      <p>{t('aboutMeDesc')}</p>
     </div>
   );
 }

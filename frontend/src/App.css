@@ -1,3 +1,153 @@
+/* Arabic/RTL Support */
+* {
+  font-family: 'Cairo', 'Tajawal', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+html[dir="rtl"] {
+  direction: rtl;
+  text-align: right;
+}
+
+/* RTL layout adjustments */
+html[dir="rtl"] .sidebar {
+  margin: 32px 0 32px 24px;
+  margin-inline-start: 0;
+  margin-inline-end: 24px;
+}
+
+html[dir="rtl"] .sidebar .sidebar-link {
+  text-align: right;
+}
+
+html[dir="rtl"] .header-left {
+  flex-direction: row-reverse;
+}
+
+html[dir="rtl"] .header-right {
+  flex-direction: row-reverse;
+  padding-right: 0;
+  padding-left: 64px;
+}
+
+html[dir="rtl"] .habit-actions {
+  flex-direction: row-reverse;
+}
+
+html[dir="rtl"] .add-habit-row {
+  flex-direction: row-reverse;
+}
+
+html[dir="rtl"] .profile-drawer {
+  left: auto;
+  right: -360px;
+}
+
+html[dir="rtl"] .profile-drawer.open {
+  right: 0;
+}
+
+html[dir="rtl"] .profile-close {
+  left: 12px;
+  right: auto;
+}
+
+html[dir="rtl"] .back-to-top-button {
+  left: 24px;
+  right: auto;
+}
+
+html[dir="rtl"] .tutorial-help-btn {
+  left: auto;
+  right: 24px;
+}
+
+/* Mirror arrow icons for RTL */
+html[dir="rtl"] .back-to-top-button {
+  transform: scaleX(1); /* Arrow stays same direction */
+}
+
+/* Language Toggle Button */
+.lang-toggle-btn {
+  background: linear-gradient(135deg, var(--accent-cyan), var(--accent-purple));
+  border: none;
+  color: #fff;
+  font-weight: 700;
+  font-size: 0.9rem;
+  padding: 8px 14px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+  margin-right: 12px;
+  min-width: 40px;
+}
+
+.lang-toggle-btn:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 12px rgba(0, 255, 247, 0.5);
+}
+
+html[dir="rtl"] .lang-toggle-btn {
+  margin-right: 0;
+  margin-left: 12px;
+}
+
+/* LTR Support */
+html[dir="ltr"] {
+  direction: ltr;
+  text-align: left;
+}
+
+html[dir="ltr"] .sidebar {
+  margin: 32px 24px 32px 0;
+}
+
+html[dir="ltr"] .sidebar .sidebar-link {
+  text-align: left;
+}
+
+html[dir="ltr"] .header-left {
+  flex-direction: row;
+}
+
+html[dir="ltr"] .header-right {
+  flex-direction: row;
+  padding-left: 0;
+  padding-right: 64px;
+}
+
+html[dir="ltr"] .habit-actions {
+  flex-direction: row;
+}
+
+html[dir="ltr"] .add-habit-row {
+  flex-direction: row;
+}
+
+html[dir="ltr"] .profile-drawer {
+  right: -360px;
+  left: auto;
+}
+
+html[dir="ltr"] .profile-drawer.open {
+  right: 0;
+  left: auto;
+}
+
+html[dir="ltr"] .profile-close {
+  right: 12px;
+  left: auto;
+}
+
+html[dir="ltr"] .back-to-top-button {
+  right: 24px;
+  left: auto;
+}
+
+html[dir="ltr"] .tutorial-help-btn {
+  right: auto;
+  left: 24px;
+}
+
 #layout {
   display: flex;
   min-height: 100vh;

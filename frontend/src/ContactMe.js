@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef, useContext } from 'react';
 import emailjs from '@emailjs/browser';
 import { AuthContext } from './AuthContext';
+import { useLanguage } from './LanguageContext';
 
 const EMAILJS_SERVICE_ID = 'service_p1h0j0t';
 const EMAILJS_TEMPLATE_ID = 'template_s5km4ws';
@@ -13,6 +14,7 @@ const RATE_LIMIT_TIME = 60000;
 
 export default function ContactMe() {
   const { userProfile } = useContext(AuthContext);
+  const { t } = useLanguage();
   const [email, setEmail] = useState('');
   const [message, setMessage] = useState('');
   const [sent, setSent] = useState(false);
@@ -43,7 +45,7 @@ export default function ContactMe() {
     // Anti-spam check 2: Time-based - form submitted too quickly
     const timeSpent = Date.now() - formLoadTime.current;
     if (timeSpent < MIN_SUBMIT_TIME) {
-      setError('Please take a moment to write your message.');
+      setError(t('takeAMoment'));
       return;
     }
 
@@ -51,20 +53,20 @@ export default function ContactMe() {
     const lastSubmit = localStorage.getItem('lastContactSubmit');
     if (lastSubmit && Date.now() - parseInt(lastSubmit) < RATE_LIMIT_TIME) {
       const waitTime = Math.ceil((RATE_LIMIT_TIME - (Date.now() - parseInt(lastSubmit))) / 1000);
-      setError(`Please wait ${waitTime} seconds before sending another message.`);
+      setError(t('waitSeconds', { seconds: waitTime }));
       return;
     }
 
     // Basic validation
     if (!message || message.trim().length < 10) {
-      setError('Please write a message (at least 10 characters).');
+      setError(t('writeMessage'));
       return;
     }
 
     // Anti-spam check 4: Check for excessive links (common in spam)
     const linkCount = (message.match(/https?:\/\//gi) || []).length;
     if (linkCount > 3) {
-      setError('Too many links in your message.');
+      setError(t('tooManyLinks'));
       return;
     }
 
@@ -84,7 +86,7 @@ export default function ContactMe() {
       localStorage.setItem('lastContactSubmit', Date.now().toString());
       setSent(true);
     } catch (err) {
-      setError('Failed to send message. Please try again later.');
+      setError(t('sendFailed'));
     } finally {
       setSending(false);
     }
@@ -92,8 +94,8 @@ export default function ContactMe() {
 
   return (
     <>
-      <h2>Get in Touch</h2>
-      <div style={{textAlign:'center', color:'#a100ff', fontWeight:600, fontSize:'1.15rem', marginBottom:'18px', letterSpacing:'1px', filter:'drop-shadow(0 1px 8px #00fff7aa)'}}>Let's connect — cyberpunk style!</div>
+      <h2>{t('contactUs')}</h2>
+      <div style={{textAlign:'center', color:'#a100ff', fontWeight:600, fontSize:'1.15rem', marginBottom:'18px', letterSpacing:'1px', filter:'drop-shadow(0 1px 8px #00fff7aa)'}}>{t('contactTagline')}</div>
       <form onSubmit={handleSend}>
         {/* Honeypot field - hidden from humans, bots will fill it */}
         <input
@@ -107,20 +109,20 @@ export default function ContactMe() {
         />
         <input
           type="email"
-          placeholder="Your email (optional)"
+          placeholder={t('emailPlaceholder')}
           value={email}
           onChange={e => setEmail(e.target.value)}
         />
         <textarea
-          placeholder="Your message"
+          placeholder={t('messagePlaceholder')}
           value={message}
           onChange={e => setMessage(e.target.value)}
         />
         <button type="submit" disabled={sending || sent}>
-          {sending ? 'Sending...' : sent ? 'Sent!' : 'Send'}
+          {sending ? t('sending') : sent ? t('sent') : t('send')}
         </button>
         {error && <div style={{color:'#00fff7', marginTop:'8px', fontWeight:500}}>{error}</div>}
-        {sent && <div style={{color:'#a100ff', marginTop:'8px', fontWeight:500}}>Message sent!</div>}
+        {sent && <div style={{color:'#a100ff', marginTop:'8px', fontWeight:500}}>{t('messageSent')}</div>}
       </form>
     </>
   );

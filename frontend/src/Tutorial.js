@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { useLanguage } from './LanguageContext';
 
 export default function Tutorial({ visible, onClose }) {
+  const { t } = useLanguage();
   const [step, setStep] = useState(0);
   const [highlight, setHighlight] = useState(null);
   const retryCountRef = useRef(0);
@@ -9,29 +11,29 @@ export default function Tutorial({ visible, onClose }) {
   // Steps: user must perform each action to advance
   const steps = [
     {
-      title: 'Type a Habit',
-      body: 'Type a habit in the input box below. Try "Brush your teeth" as a suggestion!',
+      title: t('step1Title'),
+      body: t('step1Body'),
       selector: '.add-habit-input',
       waitFor: 'input',
       placement: 'bottom'
     },
     {
-      title: 'Add the Habit',
-      body: 'Click the "Add" button to save your habit.',
+      title: t('step2Title'),
+      body: t('step2Body'),
       selector: '.add-habit-btn',
       waitFor: 'habitAdded',
       placement: 'bottom'
     },
     {
-      title: 'Mark as Done',
-      body: 'Click "Mark as done" to complete the habit for today.',
+      title: t('step3Title'),
+      body: t('step3Body'),
       selector: '.habit-complete-btn',
       waitFor: 'habitCompleted',
       placement: 'top'
     },
     {
-      title: 'Delete the Habit',
-      body: 'Click "Delete" to remove the habit.',
+      title: t('step4Title'),
+      body: t('step4Body'),
       selector: '.habit-delete-btn',
       waitFor: 'habitDeleted',
       placement: 'top'
@@ -317,8 +319,8 @@ export default function Tutorial({ visible, onClose }) {
         style={cardStyle}
       >
         <div className="tutorial-header">
-          <div className="tutorial-step">Step {step + 1} / {steps.length}</div>
-          <button className="tutorial-skip" onClick={finish}>Skip</button>
+          <div className="tutorial-step">{t('tutorialStep')} {step + 1} / {steps.length}</div>
+          <button className="tutorial-skip" onClick={finish}>{t('skip')}</button>
         </div>
         <h3 className="tutorial-title">{s.title}</h3>
         <p className="tutorial-body">{s.body}</p>

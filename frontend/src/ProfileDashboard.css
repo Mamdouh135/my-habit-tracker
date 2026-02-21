@@ -17,6 +17,18 @@
   overflow-y: auto; /* allow drawer to scroll if content exceeds viewport */
 }
 
+/* RTL support for drawer */
+html[dir="rtl"] .profile-drawer {
+  right: auto;
+  left: 0;
+  transform: translateX(-100%);
+  box-shadow: 4px 0 12px rgba(0,0,0,0.2);
+}
+
+html[dir="rtl"] .profile-drawer.open {
+  transform: translateX(0);
+}
+
 /* dark mode for profile drawer */
 body.dark .profile-drawer {
   background: #1f2937; /* slate-800 */

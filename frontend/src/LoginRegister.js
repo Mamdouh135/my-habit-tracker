@@ -2,28 +2,31 @@ import React, { useState, useContext, useEffect, useRef } from 'react';
 import ReCAPTCHA from 'react-google-recaptcha';
 import { register, login } from './api';
 import { AuthContext } from './AuthContext';
+import { useLanguage } from './LanguageContext';
 
 const RECAPTCHA_SITE_KEY = '6LeRl3MsAAAAAJ7Z5Bz9_9Dtd1xAU-ebSZenhC5N';
 
-// Password strength checker
-function getPasswordStrength(password) {
-  const checks = {
-    length: password.length >= 8,
-    uppercase: /[A-Z]/.test(password),
-    lowercase: /[a-z]/.test(password),
-    number: /[0-9]/.test(password),
-    special: /[!@#$%^&*(),.?":{}|<>]/.test(password),
-  };
-  
-  const passed = Object.values(checks).filter(Boolean).length;
-  
-  if (passed <= 2) return { level: 'weak', color: '#ff4444', text: 'Weak' };
-  if (passed === 3) return { level: 'fair', color: '#ffaa00', text: 'Fair' };
-  if (passed === 4) return { level: 'good', color: '#00cc66', text: 'Good' };
-  return { level: 'strong', color: '#00ff88', text: 'Strong' };
-}
-
 export default function LoginRegister({ initial }) {
+  const { t } = useLanguage();
+  
+  // Password strength checker
+  const getPasswordStrength = (password) => {
+    const checks = {
+      length: password.length >= 8,
+      uppercase: /[A-Z]/.test(password),
+      lowercase: /[a-z]/.test(password),
+      number: /[0-9]/.test(password),
+      special: /[!@#$%^&*(),.?":{}|<>]/.test(password),
+    };
+    
+    const passed = Object.values(checks).filter(Boolean).length;
+    
+    if (passed <= 2) return { level: 'weak', color: '#ff4444', text: t('weak') };
+    if (passed === 3) return { level: 'fair', color: '#ffaa00', text: t('fair') };
+    if (passed === 4) return { level: 'good', color: '#00cc66', text: t('good') };
+    return { level: 'strong', color: '#00ff88', text: t('strong') };
+  };
+
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [isRegister, setIsRegister] = useState(false);
@@ -56,13 +59,13 @@ export default function LoginRegister({ initial }) {
     if (isRegister) {
       // Check CAPTCHA
       if (!captchaToken) {
-        setError('Please complete the CAPTCHA verification.');
+        setError(t('verifyCaptcha'));
         return;
       }
 
       // Check password strength
       if (passwordStrength.level === 'weak') {
-        setError('Password is too weak. Use at least 8 characters with uppercase, lowercase, numbers, and special characters.');
+        setError(t('weakPassword'));
         return;
       }
     }
@@ -91,17 +94,17 @@ export default function LoginRegister({ initial }) {
 
   return (
     <div>
-      <h2>{isRegister ? 'Register' : 'Login'}</h2>
+      <h2>{isRegister ? t('createAccount') : t('login')}</h2>
       <form onSubmit={handleSubmit} autoComplete="on">
         <input 
-          placeholder="Username" 
+          placeholder={t('username')} 
           value={username} 
           onChange={e => setUsername(e.target.value)}
           autoComplete="username"
           name="username"
         />
         <input 
-          placeholder="Password" 
+          placeholder={t('password')} 
           type="password" 
           value={password} 
           onChange={e => setPassword(e.target.value)}
@@ -129,10 +132,10 @@ export default function LoginRegister({ initial }) {
               ))}
             </div>
             <div style={{ fontSize: '0.85rem', color: passwordStrength.color, fontWeight: 500 }}>
-              Password strength: {passwordStrength.text}
+              {t('passwordStrength')}: {passwordStrength.text}
             </div>
             <div style={{ fontSize: '0.75rem', color: '#888', marginTop: '4px' }}>
-              Use 8+ characters with uppercase, lowercase, numbers & symbols
+              {t('passwordHint')}
             </div>
           </div>
         )}
@@ -150,10 +153,10 @@ export default function LoginRegister({ initial }) {
           </div>
         )}
 
-        <button type="submit">{isRegister ? 'Register' : 'Login'}</button>
+        <button type="submit">{isRegister ? t('createAccount') : t('login')}</button>
       </form>
       <button className="auth-toggle" onClick={() => setIsRegister(r => !r)}>
-        {isRegister ? 'Have an account? Login' : 'No account? Register'}
+        {isRegister ? t('haveAccount') : t('noAccount')}
       </button>
       {error && <div className="error">{error}</div>}
     </div>

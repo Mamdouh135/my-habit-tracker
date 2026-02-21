@@ -1,5 +1,6 @@
 import React, { useContext, useState, useRef, useEffect } from 'react';
 import { AuthContext } from './AuthContext';
+import { useLanguage } from './LanguageContext';
 import LoginRegister from './LoginRegister';
 import Habits from './Habits';
 import AboutMe from './AboutMe';
@@ -9,6 +10,7 @@ import Tutorial from './Tutorial';
 import ProfileDashboard from './ProfileDashboard';
 function App() {
   const { token, userProfile } = useContext(AuthContext);
+  const { language, toggleLanguage, t } = useLanguage();
   const [displayAvatar, setDisplayAvatar] = useState('');
 
   const dataUriToBlobUrl = uri => {
@@ -127,17 +129,20 @@ function App() {
       <header className="site-header">
         <div className="header-left">
           <div className="header-logo">🌱</div>
-          <button className="header-contact-btn" onClick={handleScrollToContact}>Contact Me</button>
+          <button className="header-contact-btn" onClick={handleScrollToContact}>{t('contactMe')}</button>
         </div>
         <div className="header-center">
-          <div className="header-title">Habit Tracker SaaS</div>
-          <div className="header-subtitle">Track your habits, grow your life</div>
+          <div className="header-title">{t('habitTracker')}</div>
+          <div className="header-subtitle">{t('subtitle')}</div>
         </div>
         <div className="header-right">
+          <button className="lang-toggle-btn" onClick={toggleLanguage} title={t('language')}>
+            {language === 'ar' ? 'EN' : 'ع'}
+          </button>
           {token && (
             <>
               <span className="header-username">{userProfile.name || ''}</span>
-              <button className="header-profile-btn" onClick={() => toggleProfile(true)} title="Profile" aria-label="Profile">
+              <button className="header-profile-btn" onClick={() => toggleProfile(true)} title={t('profile')} aria-label={t('profile')}>
                 <img src={displayAvatar || userProfile.avatar || 'https://via.placeholder.com/32?text=?'} alt="profile" className="header-profile-avatar" />
               </button>
             </>
@@ -157,11 +162,11 @@ function App() {
       )}
       <div className="main-wrapper">
         <aside className="sidebar">
-          <div className="sidebar-title">Navigation</div>
-          <button className={`sidebar-link${page==='home'?' active':''}`} onClick={() => setPage('home')}>Home</button>
-          <button className={`sidebar-link${page==='about'?' active':''}`} onClick={() => setPage('about')}>About Me</button>
+          <div className="sidebar-title">{t('navigation')}</div>
+          <button className={`sidebar-link${page==='home'?' active':''}`} onClick={() => setPage('home')}>{t('home')}</button>
+          <button className={`sidebar-link${page==='about'?' active':''}`} onClick={() => setPage('about')}>{t('aboutMe')}</button>
           <button className="sidebar-dark-toggle" onClick={() => setDark(d => !d)}>
-            {dark ? 'Light Mode' : 'Dark Mode'}
+            {dark ? t('lightMode') : t('darkMode')}
           </button>
         </aside>
         <main className="main-content">
@@ -182,22 +187,22 @@ function App() {
         <button
           className="tutorial-help-btn"
           onClick={() => setShowTutorial(true)}
-          title="Show tutorial"
-          aria-label="Show tutorial"
+          title={t('showTutorial')}
+          aria-label={t('showTutorial')}
         >
           ?
         </button>
       )}
       <footer className="site-footer">
-        &copy; {new Date().getFullYear()} Habit Tracker SaaS. All rights reserved. | Created by Mamdouh
+        &copy; {new Date().getFullYear()} {t('footer')}
       </footer>
       
       {/* Back to Top Button */}
       <button
         className={`back-to-top-button ${showBackToTop ? 'visible' : 'hidden'}`}
         onClick={handleBackToTop}
-        aria-label="Back to top"
-        title="Back to top"
+        aria-label={t('backToTop')}
+        title={t('backToTop')}
       >
         ↑
       </button>

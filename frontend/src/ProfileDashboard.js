@@ -1,9 +1,11 @@
 import React, { useState, useEffect, useContext, useRef } from 'react';
 import { getHabits, getCompletions, getLogs } from './api';
 import { AuthContext } from './AuthContext';
+import { useLanguage } from './LanguageContext';
 import './ProfileDashboard.css';
 
 export default function ProfileDashboard({ visible, onClose, token }) {
+  const { t } = useLanguage();
   const [habits, setHabits] = useState([]);
   const [completions, setCompletions] = useState({});
   const [loading, setLoading] = useState(false);
@@ -72,8 +74,8 @@ export default function ProfileDashboard({ visible, onClose, token }) {
 
 
   const badges = [
-    { key: '7day', title: '7-Day Warrior', rule: hs => hs.filter(h => completions[h.id]).length >= 7 },
-    { key: '30day', title: '30-Day Streak', rule: hs => hs.filter(h => completions[h.id]).length >= 30 }
+    { key: '7day', title: t('badge7day'), rule: hs => hs.filter(h => completions[h.id]).length >= 7 },
+    { key: '30day', title: t('badge30day'), rule: hs => hs.filter(h => completions[h.id]).length >= 30 }
   ];
 
   const [nameInput, setNameInput] = useState('');
@@ -139,28 +141,28 @@ export default function ProfileDashboard({ visible, onClose, token }) {
   return (
     <div className={`profile-drawer${visible ? ' open' : ''}`}>      
       <header className="profile-header">
-        <div className="profile-title">Your Profile</div>
-        <button className="profile-close" onClick={onClose} aria-label="Close profile">×</button>
+        <div className="profile-title">{t('yourProfile')}</div>
+        <button className="profile-close" onClick={onClose} aria-label={t('close')}>×</button>
       </header>
       <section className="profile-settings">
-        <h3>Account</h3>
+        <h3>{t('account')}</h3>
         <label>
-          Name:
+          {t('name')}:
           <input type="text" value={nameInput} onChange={e=>setNameInput(e.target.value)} />
         </label>
           <div className="avatar-control">
           <img
             src={avatarPreview || 'https://via.placeholder.com/80?text=?'}
-            alt="avatar preview"
+            alt={t('avatarPreview')}
             className="avatar-preview-large"
             onClick={() => fileInputRef.current && fileInputRef.current.click()}
-            title="Click to change avatar"
+            title={t('changeAvatar')}
           />
           <button
             type="button"
             className="avatar-change-btn"
             onClick={() => fileInputRef.current && fileInputRef.current.click()}
-            aria-label="Change avatar"
+            aria-label={t('changeAvatar')}
           >✎</button>
           <input
             type="file"
@@ -170,10 +172,10 @@ export default function ProfileDashboard({ visible, onClose, token }) {
             style={{ display: 'none' }}
           />
         </div>
-        <button className="profile-save-btn" onClick={saveProfile}>Save</button>
+        <button className="profile-save-btn" onClick={saveProfile}>{t('save')}</button>
       </section>
       <section className="profile-badges">
-        <h3>Success Badges</h3>
+        <h3>{t('badges')}</h3>
         <div className="badge-grid">
           {badges.map(b => {
             const unlocked = b.rule(habits);
@@ -187,14 +189,14 @@ export default function ProfileDashboard({ visible, onClose, token }) {
         </div>
       </section>
       <section className="profile-history">
-        <h3>History</h3>
+        <h3>{t('history')}</h3>
         <button className="edit-history-toggle" onClick={() => setEditMode(m => !m)}>
-          {editMode ? 'Done' : 'Edit History'}
+          {editMode ? t('done') : t('editHistory')}
         </button>
         <div className="history-list">
-          {loading ? <div>Loading...</div> : (
+          {loading ? <div>{t('loading')}</div> : (
             logs.length === 0 ? (
-              <div className="history-empty">No entries.</div>
+              <div className="history-empty">{t('noHistory')}</div>
             ) : (
               logs.map((h, idx) => (
                 <div key={idx} className="history-item">
