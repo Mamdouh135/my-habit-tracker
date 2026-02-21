@@ -71,6 +71,22 @@ export default function ProfileDashboard({ visible, onClose, token }) {
   const [nameInput, setNameInput] = useState('');
   const [avatarInput, setAvatarInput] = useState('');
   const [avatarFile, setAvatarFile] = useState(null);
+  const [avatarPreview, setAvatarPreview] = useState('');
+
+  // helper to convert data uri -> blob URL
+  const dataUriToBlobUrl = (uri) => {
+    try {
+      const byteString = atob(uri.split(',')[1]);
+      const mimeString = uri.split(',')[0].split(':')[1].split(';')[0];
+      const ab = new ArrayBuffer(byteString.length);
+      const ia = new Uint8Array(ab);
+      for (let i = 0; i < byteString.length; i++) ia[i] = byteString.charCodeAt(i);
+      const blob = new Blob([ab], { type: mimeString });
+      return URL.createObjectURL(blob);
+    } catch {
+      return uri; // fallback
+    }
+  };
 
   // when profile opens populate inputs
   useEffect(() => {
@@ -80,6 +96,19 @@ export default function ProfileDashboard({ visible, onClose, token }) {
       setAvatarFile(null);
     }
   }, [visible, userProfile]);
+
+  // keep preview synced
+  useEffect(() => {
+    if (avatarInput) {
+      if (avatarInput.startsWith('data:')) {
+        setAvatarPreview(dataUriToBlobUrl(avatarInput));
+      } else {
+        setAvatarPreview(avatarInput);
+      }
+    } else {
+      setAvatarPreview('');
+    }
+  }, [avatarInput]);
 
   // convert file to base64 string
   const handleFileChange = e => {
@@ -115,12 +144,12 @@ export default function ProfileDashboard({ visible, onClose, token }) {
           <input type="file" accept="image/*" onChange={handleFileChange} />
         </label>
         <label>
-          Avatar URL (or data URI):
-          <input type="text" value={avatarInput} onChange={e=>setAvatarInput(e.target.value)} />
+          Avatar URL/data URI:
+          <input type="password" value={avatarInput} onChange={e=>setAvatarInput(e.target.value)} />
         </label>
-        {avatarInput && (
+        {avatarPreview && (
           <div className="avatar-preview">
-            <img src={avatarInput} alt="avatar preview" style={{width:'64px',height:'64px',borderRadius:'50%'}} />
+            <img src={avatarPreview} alt="avatar preview" style={{width:'64px',height:'64px',borderRadius:'50%'}} />
           </div>
         )}
         <button className="profile-save-btn" onClick={saveProfile}>Save</button>

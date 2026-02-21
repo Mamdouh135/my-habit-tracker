@@ -9,6 +9,33 @@ import Tutorial from './Tutorial';
 import ProfileDashboard from './ProfileDashboard';
 function App() {
   const { token, userProfile } = useContext(AuthContext);
+  const [displayAvatar, setDisplayAvatar] = useState('');
+
+  const dataUriToBlobUrl = uri => {
+    try {
+      const byteString = atob(uri.split(',')[1]);
+      const mimeString = uri.split(',')[0].split(':')[1].split(';')[0];
+      const ab = new ArrayBuffer(byteString.length);
+      const ia = new Uint8Array(ab);
+      for (let i = 0; i < byteString.length; i++) ia[i] = byteString.charCodeAt(i);
+      const blob = new Blob([ab], { type: mimeString });
+      return URL.createObjectURL(blob);
+    } catch {
+      return uri;
+    }
+  };
+
+  useEffect(() => {
+    if (userProfile && userProfile.avatar) {
+      if (userProfile.avatar.startsWith('data:')) {
+        setDisplayAvatar(dataUriToBlobUrl(userProfile.avatar));
+      } else {
+        setDisplayAvatar(userProfile.avatar);
+      }
+    } else {
+      setDisplayAvatar('');
+    }
+  }, [userProfile]);
   const [page, setPage] = useState('home');
   const [dark, setDark] = useState(() => {
     return localStorage.getItem('dark') === 'true';
@@ -96,7 +123,7 @@ function App() {
         <div className="header-right">
           <span className="header-username">{userProfile.name || ''}</span>
           <button className="header-profile-btn" onClick={() => toggleProfile(true)} title="Profile" aria-label="Profile">
-            <img src={userProfile.avatar || 'https://via.placeholder.com/32?text=?'} alt="profile" className="header-profile-avatar" />
+            <img src={displayAvatar || userProfile.avatar || 'https://via.placeholder.com/32?text=?'} alt="profile" className="header-profile-avatar" />
           </button>
         </div>
       </header>
