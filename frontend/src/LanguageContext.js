@@ -128,6 +128,7 @@ const translations = {
     todaysRoutines: 'روتين اليوم',
     noRoutinesToday: 'لا يوجد روتين مجدول لهذا اليوم',
     allRoutines: 'جميع الروتينات',
+    weeklyTracking: 'تتبع أسبوعي',
     cancel: 'إلغاء',
   },
   en: {
@@ -257,6 +258,7 @@ const translations = {
     todaysRoutines: "Today's Routines",
     noRoutinesToday: 'No routines scheduled for today',
     allRoutines: 'All Routines',
+    weeklyTracking: 'Weekly Tracking',
     cancel: 'Cancel',
   }
 };
