@@ -558,6 +558,26 @@ body.dark {
 }
 .header-right {
   display: flex;
+}
+
+/* constrain profile avatar size to prevent huge data URIs */
+.header-profile-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #fff;
+  box-shadow: 0 0 0 1px rgba(0,0,0,0.1);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.header-profile-avatar:hover,
+.header-profile-avatar:focus {
+  transform: scale(1.1);
+  box-shadow: 0 0 4px rgba(0,0,0,0.3);
+}
+
+.header-right {
+  display: flex;
   align-items: center;
   gap: 12px;
   flex-shrink: 0; /* prevent right group from being pushed out */

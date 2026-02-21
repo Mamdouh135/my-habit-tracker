@@ -30,5 +30,12 @@ export async function initDb() {
       FOREIGN KEY(habitId) REFERENCES habits(id)
     );
   `);
+  // make sure optional profile columns exist (running ALTER is safe if they already exist)
+  try {
+    await db.run(`ALTER TABLE users ADD COLUMN name TEXT`);
+  } catch {}
+  try {
+    await db.run(`ALTER TABLE users ADD COLUMN avatar TEXT`);
+  } catch {}
   return db;
 }

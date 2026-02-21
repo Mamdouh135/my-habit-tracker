@@ -13,7 +13,8 @@ router.post('/register', async (req, res) => {
   const db = await openDb();
   try {
     const hash = await bcrypt.hash(password, 10);
-    await db.run('INSERT INTO users (username, password) VALUES (?, ?)', [username, hash]);
+    // create with blank profile columns as well
+    await db.run('INSERT INTO users (username, password, name, avatar) VALUES (?, ?, ?, ?)', [username, hash, '', '']);
     res.json({ success: true });
   } catch (e) {
     res.status(400).json({ error: 'Username taken' });
@@ -29,7 +30,8 @@ router.post('/login', async (req, res) => {
   const valid = await bcrypt.compare(password, user.password);
   if (!valid) return res.status(401).json({ error: 'Invalid credentials' });
   const token = jwt.sign({ userId: user.id }, JWT_SECRET, { expiresIn: '1d' });
-  res.json({ token });
+  // include profile info so client can populate immediately
+  res.json({ token, profile: { name: user.name || '', avatar: user.avatar || '' } });
 });
 
 // Auth middleware
@@ -50,6 +52,29 @@ router.get('/habits', auth, async (req, res) => {
   const db = await openDb();
   const habits = await db.all('SELECT * FROM habits WHERE userId = ?', [req.userId]);
   res.json(habits);
+});
+
+// Profile retrieval
+router.get('/profile', auth, async (req, res) => {
+  const db = await openDb();
+  const user = await db.get('SELECT name, avatar, username FROM users WHERE id = ?', [req.userId]);
+  if (!user) return res.status(404).json({ error: 'User not found' });
+  res.json({ name: user.name || '', avatar: user.avatar || '', username: user.username });
+});
+
+// Profile update
+router.post('/profile', auth, async (req, res) => {
+  const { name, avatar } = req.body;
+  const db = await openDb();
+  // only update what was provided
+  if (name !== undefined) {
+    await db.run('UPDATE users SET name = ? WHERE id = ?', [name, req.userId]);
+  }
+  if (avatar !== undefined) {
+    await db.run('UPDATE users SET avatar = ? WHERE id = ?', [avatar, req.userId]);
+  }
+  const user = await db.get('SELECT name, avatar, username FROM users WHERE id = ?', [req.userId]);
+  res.json({ name: user.name || '', avatar: user.avatar || '' });
 });
 
 // Add habit

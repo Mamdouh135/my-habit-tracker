@@ -6,7 +6,8 @@ import contactRoutes from './contact.js';
 
 const app = express();
 app.use(cors());
-app.use(express.json());
+// allow larger payloads for base64-encoded avatars
+app.use(express.json({ limit: '5mb' }));
 
 app.get('/', (req, res) => {
   res.send('Habit Tracker SaaS Backend Running');

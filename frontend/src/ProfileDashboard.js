@@ -70,14 +70,29 @@ export default function ProfileDashboard({ visible, onClose, token }) {
 
   const [nameInput, setNameInput] = useState('');
   const [avatarInput, setAvatarInput] = useState('');
+  const [avatarFile, setAvatarFile] = useState(null);
 
   // when profile opens populate inputs
   useEffect(() => {
     if (visible && userProfile) {
       setNameInput(userProfile.name || '');
       setAvatarInput(userProfile.avatar || '');
+      setAvatarFile(null);
     }
   }, [visible, userProfile]);
+
+  // convert file to base64 string
+  const handleFileChange = e => {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = () => {
+        setAvatarInput(reader.result);
+      };
+      reader.readAsDataURL(file);
+      setAvatarFile(file);
+    }
+  };
 
   const saveProfile = () => {
     updateProfile({ name: nameInput, avatar: avatarInput });
@@ -96,9 +111,18 @@ export default function ProfileDashboard({ visible, onClose, token }) {
           <input type="text" value={nameInput} onChange={e=>setNameInput(e.target.value)} />
         </label>
         <label>
-          Avatar URL:
+          Change avatar:
+          <input type="file" accept="image/*" onChange={handleFileChange} />
+        </label>
+        <label>
+          Avatar URL (or data URI):
           <input type="text" value={avatarInput} onChange={e=>setAvatarInput(e.target.value)} />
         </label>
+        {avatarInput && (
+          <div className="avatar-preview">
+            <img src={avatarInput} alt="avatar preview" style={{width:'64px',height:'64px',borderRadius:'50%'}} />
+          </div>
+        )}
         <button className="profile-save-btn" onClick={saveProfile}>Save</button>
       </section>
       <section className="profile-badges">

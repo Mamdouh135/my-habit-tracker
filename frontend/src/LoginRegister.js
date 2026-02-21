@@ -26,7 +26,8 @@ export default function LoginRegister({ initial }) {
         setIsRegister(false);
       } else {
         const res = await login(username, password);
-        doLogin(res.data.token);
+        // backend now returns profile along with token
+        doLogin(res.data.token, res.data.profile);
       }
     } catch (e) {
       setError(e.response?.data?.error || 'Error');
