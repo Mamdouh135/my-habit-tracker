@@ -29,6 +29,15 @@ export async function initDb() {
       date TEXT NOT NULL,
       FOREIGN KEY(habitId) REFERENCES habits(id)
     );
+    CREATE TABLE IF NOT EXISTS habit_logs (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      userId INTEGER NOT NULL,
+      habitId INTEGER,
+      action TEXT NOT NULL,
+      performedAt TEXT NOT NULL,
+      FOREIGN KEY(userId) REFERENCES users(id),
+      FOREIGN KEY(habitId) REFERENCES habits(id)
+    );
   `);
   // make sure optional profile columns exist (running ALTER is safe if they already exist)
   try {

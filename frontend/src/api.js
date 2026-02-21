@@ -30,6 +30,11 @@ export function getCompletions(token, id) {
   return axios.get(`${API_URL}/habits/${id}/completions`, { headers: { Authorization: `Bearer ${token}` } });
 }
 
+
+export function getLogs(token) {
+  return axios.get(`${API_URL}/logs`, { headers: { Authorization: `Bearer ${token}` } });
+}
+
 // profile endpoints
 export function getProfile(token) {
   return axios.get(`${API_URL}/profile`, { headers: { Authorization: `Bearer ${token}` } });

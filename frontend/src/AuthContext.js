@@ -5,7 +5,7 @@ export const AuthContext = createContext();
 export function AuthProvider({ children }) {
   const [token, setToken] = useState(localStorage.getItem('token'));
   // include username for storage key
-  const [userProfile, setUserProfile] = useState({ name: '', avatar: '', username: '' });
+  const [userProfile, setUserProfile] = useState({ id: '', name: '', avatar: '', username: '' });
 
   // helper to stash locally by username
   const saveLocalProfile = (profile) => {
@@ -28,6 +28,7 @@ export function AuthProvider({ children }) {
       import('./api').then(({ getProfile }) => {
         getProfile(token).then(res => {
           const prof = {
+            id: res.data.id || '',
             name: res.data.name || '',
             avatar: res.data.avatar || '',
             username: res.data.username || ''
@@ -47,7 +48,7 @@ export function AuthProvider({ children }) {
     setToken(newToken);
     localStorage.setItem('token', newToken);
     if (profile) {
-      // ensure username included
+      // ensure we copy id/username etc.
       const prof = { ...profile };
       setUserProfile(prof);
       saveLocalProfile(prof);
@@ -56,6 +57,7 @@ export function AuthProvider({ children }) {
     import('./api').then(({ getProfile }) => {
       getProfile(newToken).then(res => {
         const prof = {
+          id: res.data.id || '',
           name: res.data.name || '',
           avatar: res.data.avatar || '',
           username: res.data.username || ''
@@ -83,6 +85,7 @@ export function AuthProvider({ children }) {
       });
     }
   };
+
 
   return (
     <AuthContext.Provider value={{ token, login, logout, userProfile, updateProfile }}>

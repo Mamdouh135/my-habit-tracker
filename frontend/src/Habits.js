@@ -2,22 +2,9 @@ import React, { useState, useEffect, useContext } from 'react';
 import { getHabits, addHabit, deleteHabit, completeHabit, getCompletions } from './api';
 import { AuthContext } from './AuthContext';
 
-// history helpers
-function readHistory() {
-  const json = localStorage.getItem('habitHistory');
-  try { return json ? JSON.parse(json) : []; } catch { return []; }
-}
-function writeHistory(arr) {
-  localStorage.setItem('habitHistory', JSON.stringify(arr));
-}
-function pushHistory(entry) {
-  const arr = readHistory();
-  arr.unshift(entry); // newest first
-  writeHistory(arr);
-}
 
 export default function Habits() {
-  const { token, logout } = useContext(AuthContext);
+  const { token, logout, userProfile } = useContext(AuthContext);
   const [habits, setHabits] = useState([]);
   const [newHabit, setNewHabit] = useState('');
   const [error, setError] = useState('');
@@ -33,18 +20,19 @@ export default function Habits() {
     if (!newHabit) return;
     try {
       await addHabit(token, newHabit);
-      pushHistory(`${new Date().toISOString()}: Added habit “${newHabit}”`);
       setNewHabit('');
       const res = await getHabits(token);
       setHabits(res.data);
+      window.dispatchEvent(new Event('habitUpdated'));
     } catch (e) {
       setError('Could not add habit');
     }
   };
 
+
   const handleDelete = async (id) => {
     const habit = habits.find(h => h.id === id);
-    if (habit) pushHistory(`${new Date().toISOString()}: Deleted habit “${habit.name}”`);
+    // server will log deletion
     await deleteHabit(token, id);
     setHabits(habits.filter(h => h.id !== id));
     window.dispatchEvent(new Event('habitUpdated'));
@@ -53,7 +41,7 @@ export default function Habits() {
   const handleComplete = async (id) => {
     await completeHabit(token, id, today);
     const habit = habits.find(h => h.id === id);
-    if (habit) pushHistory(`${new Date().toISOString()}: Completed habit “${habit.name}”`);
+    // server will log completion
     setCompletions({ ...completions, [id]: true });
     // notify other components (e.g. profile drawer) about update
     window.dispatchEvent(new Event('habitUpdated'));
@@ -68,6 +56,13 @@ export default function Habits() {
     habits.forEach(h => fetchCompletions(h.id));
     // eslint-disable-next-line
   }, [habits]);
+
+  useEffect(() => {
+    // whenever habits change we should refresh history too
+    window.dispatchEvent(new Event('habitUpdated'));
+  }, [habits]);
+
+  const displayedHabits = habits;
 
   return (
     <div>
@@ -85,7 +80,7 @@ export default function Habits() {
       </div>
       {error && <div className="error">{error}</div>}
       <ul>
-        {habits.map(habit => (
+        {displayedHabits.map(habit => (
           <li key={habit.id} className="habit-item">
             <span className="habit-name">{habit.name}</span>
             <div className="habit-actions">

@@ -38,30 +38,36 @@ function App() {
   }, [userProfile]);
   const [page, setPage] = useState('home');
   const [dark, setDark] = useState(() => {
-    return localStorage.getItem('dark') === 'true';
+    try {
+      return localStorage.getItem('dark') === 'true';
+    } catch { return false; }
   });
   const [authInitial, setAuthInitial] = useState(null); // 'register' | 'login' | null
   const [showTutorial, setShowTutorial] = useState(false);
   const [showGetStartedFlag, setShowGetStartedFlag] = useState(false);
   const [showBackToTop, setShowBackToTop] = useState(false);
   const [showProfile, setShowProfile] = useState(() => {
-    return localStorage.getItem('showProfile') === 'true';
+    try {
+      return localStorage.getItem('showProfile') === 'true';
+    } catch { return false; }
   });
 
   const toggleProfile = (v) => {
     setShowProfile(v);
-    localStorage.setItem('showProfile', v);
+    try { localStorage.setItem('showProfile', v); } catch {}
   };
   const contactRef = useRef(null);
 
   // hero section visibility (persistent per user)
   const [heroVisible, setHeroVisible] = useState(() => {
-    return localStorage.getItem('hideHero') !== 'true';
+    try {
+      return localStorage.getItem('hideHero') !== 'true';
+    } catch { return true; }
   });
 
   const hideHero = () => {
     setHeroVisible(false);
-    localStorage.setItem('hideHero', 'true');
+    try { localStorage.setItem('hideHero', 'true'); } catch {}
   };
 
   React.useEffect(() => {

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext, useRef } from 'react';
-import { getHabits, getCompletions } from './api';
+import { getHabits, getCompletions, getLogs } from './api';
 import { AuthContext } from './AuthContext';
 import './ProfileDashboard.css';
 
@@ -7,18 +7,26 @@ export default function ProfileDashboard({ visible, onClose, token }) {
   const [habits, setHabits] = useState([]);
   const [completions, setCompletions] = useState({});
   const [loading, setLoading] = useState(false);
-  const [history, setHistory] = useState([]);
+  const [logs, setLogs] = useState([]);
   const [editMode, setEditMode] = useState(false);
 
-  const loadHistory = () => {
-    const json = localStorage.getItem('habitHistory');
-    try { setHistory(json ? JSON.parse(json) : []); } catch { setHistory([]); }
+  const { updateProfile, userProfile } = useContext(AuthContext);
+
+  // load log entries from server
+  const loadLogs = async () => {
+    if (!token) return;
+    try {
+      const res = await getLogs(token);
+      setLogs(res.data || []);
+    } catch (err) {
+      console.error('Failed to load logs:', err);
+    }
   };
   const removeHistoryAt = idx => {
-    const h = [...history];
+    // editing server logs not supported; keep client-only editing for now
+    const h = [...logs];
     h.splice(idx,1);
-    localStorage.setItem('habitHistory', JSON.stringify(h));
-    setHistory(h);
+    setLogs(h);
   };
 
   // fetch habits and their completions when drawer opens or on explicit refresh
@@ -44,29 +52,29 @@ export default function ProfileDashboard({ visible, onClose, token }) {
   };
 
   useEffect(() => {
-    if (visible) {
+    if (visible && token) {
       fetchData();
-      loadHistory();
+      loadLogs();
     }
   }, [visible, token]);
 
   // refresh whenever habits are updated elsewhere
   useEffect(() => {
     const handler = () => {
-      if (visible) fetchData();
+      if (visible) {
+        fetchData();
+        loadLogs();
+      }
     };
     window.addEventListener('habitUpdated', handler);
     return () => window.removeEventListener('habitUpdated', handler);
   }, [visible, token]);
 
-  // (no derived entries any more) history comes from localStorage
 
   const badges = [
     { key: '7day', title: '7-Day Warrior', rule: hs => hs.filter(h => completions[h.id]).length >= 7 },
     { key: '30day', title: '30-Day Streak', rule: hs => hs.filter(h => completions[h.id]).length >= 30 }
   ];
-
-  const { updateProfile, userProfile } = useContext(AuthContext);
 
   const [nameInput, setNameInput] = useState('');
   const [avatarInput, setAvatarInput] = useState('');
@@ -185,12 +193,12 @@ export default function ProfileDashboard({ visible, onClose, token }) {
         </button>
         <div className="history-list">
           {loading ? <div>Loading...</div> : (
-            history.length === 0 ? (
+            logs.length === 0 ? (
               <div className="history-empty">No entries.</div>
             ) : (
-              history.map((h, idx) => (
+              logs.map((h, idx) => (
                 <div key={idx} className="history-item">
-                  {h}
+                  {h.action} {h.habitName ? `(${h.habitName})` : ''}
                   {editMode && (
                     <button className="history-delete-btn" onClick={() => removeHistoryAt(idx)}>✖</button>
                   )}
