@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useContext, useRef } from 'react';
+import ReactDOM from 'react-dom';
 import { getHabits, getCompletions, getLogs } from './api';
 import { AuthContext } from './AuthContext';
 import { useLanguage } from './LanguageContext';
@@ -11,6 +12,7 @@ export default function ProfileDashboard({ visible, onClose, token }) {
   const [loading, setLoading] = useState(false);
   const [logs, setLogs] = useState([]);
   const [editMode, setEditMode] = useState(false);
+  const [showFullHistory, setShowFullHistory] = useState(false);
 
   const { updateProfile, userProfile, logout } = useContext(AuthContext);
 
@@ -138,7 +140,7 @@ export default function ProfileDashboard({ visible, onClose, token }) {
     updateProfile({ name: nameInput, avatar: avatarInput });
   };
 
-  return (
+  const drawerContent = (
     <div className={`profile-drawer${visible ? ' open' : ''}`}>      
       <header className="profile-header">
         <div className="profile-title">{t('yourProfile')}</div>
@@ -189,31 +191,65 @@ export default function ProfileDashboard({ visible, onClose, token }) {
         </div>
       </section>
       <section className="profile-history">
-        <h3>{t('history')}</h3>
-        <button className="edit-history-toggle" onClick={() => setEditMode(m => !m)}>
-          {editMode ? t('done') : t('editHistory')}
-        </button>
+        <h3>{t('recentHistory')}</h3>
         <div className="history-list">
           {loading ? <div>{t('loading')}</div> : (
             logs.length === 0 ? (
               <div className="history-empty">{t('noHistory')}</div>
             ) : (
-              logs.map((h, idx) => (
+              logs.slice(0, 5).map((h, idx) => (
                 <div key={idx} className="history-item">
                   {h.action} {h.habitName ? `(${h.habitName})` : ''}
-                  {editMode && (
-                    <button className="history-delete-btn" onClick={() => removeHistoryAt(idx)}>✖</button>
-                  )}
                 </div>
               ))
             )
           )}
         </div>
+        {logs.length > 5 && (
+          <button className="view-all-history-btn" onClick={() => setShowFullHistory(true)}>
+            {t('viewAll')} ({logs.length})
+          </button>
+        )}
       </section>
       
       <button className="profile-logout-btn" onClick={() => { logout(); onClose(); }}>
         {t('logout')}
       </button>
     </div>
+  );
+
+  // Full History Modal - rendered via portal to center on page
+  const historyModal = showFullHistory && ReactDOM.createPortal(
+    <div className="history-modal-overlay" onClick={() => setShowFullHistory(false)}>
+      <div className="history-modal" onClick={e => e.stopPropagation()}>
+        <div className="history-modal-header">
+          <h3>{t('history')}</h3>
+          <button className="history-modal-close" onClick={() => setShowFullHistory(false)}>✖</button>
+        </div>
+        <div className="history-modal-actions">
+          <button className="edit-history-toggle" onClick={() => setEditMode(m => !m)}>
+            {editMode ? t('done') : t('editHistory')}
+          </button>
+        </div>
+        <div className="history-modal-list">
+          {logs.map((h, idx) => (
+            <div key={idx} className="history-item">
+              {h.action} {h.habitName ? `(${h.habitName})` : ''}
+              {editMode && (
+                <button className="history-delete-btn" onClick={() => removeHistoryAt(idx)}>✖</button>
+              )}
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>,
+    document.body
+  );
+
+  return (
+    <>
+      {drawerContent}
+      {historyModal}
+    </>
   );
 }

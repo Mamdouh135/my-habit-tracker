@@ -64,6 +64,8 @@ const translations = {
     done: 'تم',
     loading: 'جاري التحميل...',
     noHistory: 'لا توجد سجلات.',
+    viewAll: 'عرض الكل',
+    recentHistory: 'آخر السجلات',
     
     // Tutorial
     tutorialStep: 'الخطوة',
@@ -194,6 +196,8 @@ const translations = {
     done: 'Done',
     loading: 'Loading...',
     noHistory: 'No history yet.',
+    viewAll: 'View All',
+    recentHistory: 'Recent History',
     
     // Tutorial
     tutorialStep: 'Step',
