@@ -4,37 +4,42 @@ export const AuthContext = createContext();
 
 export function AuthProvider({ children }) {
   const [token, setToken] = useState(localStorage.getItem('token'));
-  const [userProfile, setUserProfile] = useState({ name: '', avatar: '' });
+  // include username for storage key
+  const [userProfile, setUserProfile] = useState({ name: '', avatar: '', username: '' });
 
-  // helper to stash locally
-  const saveLocalProfile = (profile, tkn) => {
-    if (tkn) {
-      try { localStorage.setItem('profile_' + tkn, JSON.stringify(profile)); } catch {}
+  // helper to stash locally by username
+  const saveLocalProfile = (profile) => {
+    if (profile.username) {
+      try { localStorage.setItem('profile_' + profile.username, JSON.stringify(profile)); } catch {}
     }
   };
 
-  // fetch profile from server when token changes (or load saved)
+  // when auth state changes: load cached then fetch server
   useEffect(() => {
     if (token) {
-      // first load from storage so UI has something
-      const saved = localStorage.getItem('profile_' + token);
-      if (saved) {
-        try {
-          setUserProfile(JSON.parse(saved));
-        } catch {}
+      // load profile from storage based on username if known
+      if (userProfile.username) {
+        const saved = localStorage.getItem('profile_' + userProfile.username);
+        if (saved) {
+          try { setUserProfile(JSON.parse(saved)); } catch {}
+        }
       }
-      // then try to refresh from server
+      // then refresh from server
       import('./api').then(({ getProfile }) => {
         getProfile(token).then(res => {
-          const prof = { name: res.data.name || '', avatar: res.data.avatar || '' };
+          const prof = {
+            name: res.data.name || '',
+            avatar: res.data.avatar || '',
+            username: res.data.username || ''
+          };
           setUserProfile(prof);
-          saveLocalProfile(prof, token);
+          saveLocalProfile(prof);
         }).catch(() => {
-          // ignore
+          // ignore failures
         });
       });
     } else {
-      setUserProfile({ name: '', avatar: '' });
+      setUserProfile({ name: '', avatar: '', username: '' });
     }
   }, [token]);
 
@@ -42,21 +47,36 @@ export function AuthProvider({ children }) {
     setToken(newToken);
     localStorage.setItem('token', newToken);
     if (profile) {
-      setUserProfile(profile);
-      saveLocalProfile(profile, newToken);
+      // ensure username included
+      const prof = { ...profile };
+      setUserProfile(prof);
+      saveLocalProfile(prof);
     }
+    // always fetch again to be safe
+    import('./api').then(({ getProfile }) => {
+      getProfile(newToken).then(res => {
+        const prof = {
+          name: res.data.name || '',
+          avatar: res.data.avatar || '',
+          username: res.data.username || ''
+        };
+        setUserProfile(prof);
+        saveLocalProfile(prof);
+      }).catch(() => {});
+    });
   };
 
   const logout = () => {
     setToken(null);
     localStorage.removeItem('token');
-    setUserProfile({ name: '', avatar: '' });
+    setUserProfile({ name: '', avatar: '', username: '' });
   };
 
   const updateProfile = (profile) => {
-    setUserProfile(profile);
-    saveLocalProfile(profile, token);
-    // send to back if logged in
+    // keep username the same
+    const updated = { ...userProfile, ...profile };
+    setUserProfile(updated);
+    saveLocalProfile(updated);
     if (token) {
       import('./api').then(({ updateProfile }) => {
         updateProfile(token, profile).catch(() => {});
