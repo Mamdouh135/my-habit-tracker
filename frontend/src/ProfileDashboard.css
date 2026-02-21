@@ -14,6 +14,7 @@
   flex-direction: column;
   color: #1e293b; /* slate-800 */
   z-index: 1000;
+  overflow-y: auto; /* allow drawer to scroll if content exceeds viewport */
 }
 
 /* dark mode for profile drawer */
@@ -67,7 +68,10 @@ body.dark .history-item {
 .profile-history {
   padding: 16px;
   flex: 1 1 auto;
-  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  /* allow internal content to scroll */
+  overflow: visible;
 }
 .profile-badges {
   border-bottom: 1px solid #cbd5e1;
@@ -136,6 +140,7 @@ body.dark .history-item {
   flex: 1 1 auto;
   overflow-y: auto;
   padding-right: 4px;
+  /* will grow to fill available space within profile-history */
 }
 .history-item {
   padding: 6px 0;
