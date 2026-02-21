@@ -47,6 +47,12 @@ function auth(req, res, next) {
   }
 }
 
+// helper to add profile columns if missing
+async function ensureProfileColumns(db) {
+  try { await db.run('ALTER TABLE users ADD COLUMN name TEXT'); } catch {}
+  try { await db.run('ALTER TABLE users ADD COLUMN avatar TEXT'); } catch {}
+}
+
 // Get habits (for logged-in user)
 router.get('/habits', auth, async (req, res) => {
   const db = await openDb();
@@ -57,6 +63,7 @@ router.get('/habits', auth, async (req, res) => {
 // Profile retrieval
 router.get('/profile', auth, async (req, res) => {
   const db = await openDb();
+  await ensureProfileColumns(db);
   const user = await db.get('SELECT name, avatar, username FROM users WHERE id = ?', [req.userId]);
   if (!user) return res.status(404).json({ error: 'User not found' });
   res.json({ name: user.name || '', avatar: user.avatar || '', username: user.username });
@@ -66,6 +73,7 @@ router.get('/profile', auth, async (req, res) => {
 router.post('/profile', auth, async (req, res) => {
   const { name, avatar } = req.body;
   const db = await openDb();
+  await ensureProfileColumns(db);
   // only update what was provided
   if (name !== undefined) {
     await db.run('UPDATE users SET name = ? WHERE id = ?', [name, req.userId]);
