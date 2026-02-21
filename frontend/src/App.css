@@ -522,6 +522,34 @@ body.dark {
   scrollbar-color: #3a3a3a #1e1e1e;
 }
 
+/* dark mode for tutorial cards */
+body.dark .tutorial-card--floating {
+  background: linear-gradient(180deg, rgba(30,30,35,0.98), rgba(40,40,50,0.95));
+  border-color: var(--accent-cyan);
+  box-shadow: 0 20px 60px rgba(0,0,0,0.5), 0 4px 20px rgba(0,188,212,0.15);
+}
+body.dark .tutorial-card {
+  background: linear-gradient(180deg, rgba(30,30,35,0.98), rgba(40,40,50,0.92));
+  border-color: rgba(0,188,212,0.3);
+  box-shadow: 0 40px 120px rgba(0,0,0,0.6), 0 6px 30px rgba(0,188,212,0.12);
+}
+body.dark .tutorial-body {
+  color: #e0e0e0;
+}
+body.dark .tutorial-step {
+  color: #aaa;
+}
+body.dark .tutorial-skip {
+  color: #aaa;
+}
+body.dark .tutorial-skip:hover {
+  color: #fff;
+}
+body.dark .tutorial-actions button {
+  color: #e0e0e0;
+  border-color: rgba(100,100,140,0.2);
+}
+
 
 #root {
   min-height: 100vh;
