@@ -15,7 +15,14 @@ function App() {
   const [showTutorial, setShowTutorial] = useState(false);
   const [showGetStartedFlag, setShowGetStartedFlag] = useState(false);
   const [showBackToTop, setShowBackToTop] = useState(false);
-  const [showProfile, setShowProfile] = useState(false);
+  const [showProfile, setShowProfile] = useState(() => {
+    return localStorage.getItem('showProfile') === 'true';
+  });
+
+  const toggleProfile = (v) => {
+    setShowProfile(v);
+    localStorage.setItem('showProfile', v);
+  };
   const contactRef = useRef(null);
 
   // hero section visibility (persistent per user)
@@ -84,7 +91,7 @@ function App() {
           <div className="header-subtitle">Track your habits, grow your life</div>
         </div>
         <div className="header-right">
-          <button className="header-profile-btn" onClick={() => setShowProfile(true)} title="Profile" aria-label="Profile">
+          <button className="header-profile-btn" onClick={() => toggleProfile(true)} title="Profile" aria-label="Profile">
             <img src="https://i.pravatar.cc/32?u=habit-tracker" alt="profile" className="header-profile-avatar" />
           </button>
         </div>
@@ -120,7 +127,7 @@ function App() {
         </main>
         {/* Render tutorial at root level so it truly pops up above everything */}
         <Tutorial visible={showTutorial} onClose={() => setShowTutorial(false)} />
-        <ProfileDashboard visible={showProfile} onClose={() => setShowProfile(false)} token={token} />
+        <ProfileDashboard visible={showProfile} onClose={() => toggleProfile(false)} token={token} />
       </div>
       {/* Help button to re-open tutorial (always visible when logged in) */}
       {token && !showTutorial && (

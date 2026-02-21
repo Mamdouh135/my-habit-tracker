@@ -35,6 +35,8 @@ export default function Habits() {
   const handleComplete = async (id) => {
     await completeHabit(token, id, today);
     setCompletions({ ...completions, [id]: true });
+    // notify other components (e.g. profile drawer) about update
+    window.dispatchEvent(new Event('habitUpdated'));
   };
 
   const fetchCompletions = async (id) => {

@@ -7,9 +7,9 @@ export default function ProfileDashboard({ visible, onClose, token }) {
   const [completions, setCompletions] = useState({});
   const [loading, setLoading] = useState(false);
 
-  // fetch habits and their completions when drawer opens
-  useEffect(() => {
-    if (!visible || !token) return;
+  // fetch habits and their completions when drawer opens or on explicit refresh
+  const fetchData = () => {
+    if (!token) return;
     setLoading(true);
     getHabits(token)
       .then(res => {
@@ -27,6 +27,19 @@ export default function ProfileDashboard({ visible, onClose, token }) {
         setCompletions(compMap);
       })
       .finally(() => setLoading(false));
+  };
+
+  useEffect(() => {
+    if (visible) fetchData();
+  }, [visible, token]);
+
+  // refresh whenever habits are updated elsewhere
+  useEffect(() => {
+    const handler = () => {
+      if (visible) fetchData();
+    };
+    window.addEventListener('habitUpdated', handler);
+    return () => window.removeEventListener('habitUpdated', handler);
   }, [visible, token]);
 
   // derive history entries
