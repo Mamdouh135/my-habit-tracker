@@ -254,6 +254,9 @@ export function LanguageProvider({ children }) {
     // Update HTML dir and lang attributes
     document.documentElement.lang = language;
     document.documentElement.dir = language === 'ar' ? 'rtl' : 'ltr';
+    
+    // Update page title
+    document.title = translations[language].habitTracker;
   }, [language]);
 
   const t = (key, params = {}) => {
