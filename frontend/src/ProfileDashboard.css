@@ -239,3 +239,26 @@ body.dark .history-item {
 .history-delete-btn:hover {
   color: #b71c1c;
 }
+
+/* Logout button */
+.profile-logout-btn {
+  margin: 20px 16px;
+  padding: 12px 20px;
+  background: #ef4444;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.profile-logout-btn:hover {
+  background: #dc2626;
+}
+body.dark .profile-logout-btn {
+  background: #b91c1c;
+}
+body.dark .profile-logout-btn:hover {
+  background: #991b1b;
+}

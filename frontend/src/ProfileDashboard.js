@@ -12,7 +12,7 @@ export default function ProfileDashboard({ visible, onClose, token }) {
   const [logs, setLogs] = useState([]);
   const [editMode, setEditMode] = useState(false);
 
-  const { updateProfile, userProfile } = useContext(AuthContext);
+  const { updateProfile, userProfile, logout } = useContext(AuthContext);
 
   // load log entries from server
   const loadLogs = async () => {
@@ -210,6 +210,10 @@ export default function ProfileDashboard({ visible, onClose, token }) {
           )}
         </div>
       </section>
+      
+      <button className="profile-logout-btn" onClick={() => { logout(); onClose(); }}>
+        {t('logout')}
+      </button>
     </div>
   );
 }
