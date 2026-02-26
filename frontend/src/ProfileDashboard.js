@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useContext, useRef } from 'react';
 import ReactDOM from 'react-dom';
+import { motion, AnimatePresence } from 'framer-motion';
 import { getHabits, getCompletions, getLogs } from './api';
 import { AuthContext } from './AuthContext';
 import { useLanguage } from './LanguageContext';
@@ -141,13 +142,36 @@ export default function ProfileDashboard({ visible, onClose, token }) {
   };
 
   const drawerContent = (
-    <>
-      {visible && <div className="profile-overlay" onClick={onClose}></div>}
-      <div className={`profile-drawer${visible ? ' open' : ''}`}>      
-        <header className="profile-header">
-          <div className="profile-title">{t('yourProfile')}</div>
-          <button className="profile-close" onClick={onClose} aria-label={t('close')}>×</button>
-        </header>
+    <AnimatePresence>
+      {visible && (
+        <>
+          <motion.div 
+            className="profile-overlay" 
+            onClick={onClose}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.3 }}
+          />
+          <motion.div 
+            className="profile-drawer open"
+            initial={{ x: '100%' }}
+            animate={{ x: 0 }}
+            exit={{ x: '100%' }}
+            transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+          >      
+            <header className="profile-header">
+              <div className="profile-title">{t('yourProfile')}</div>
+              <motion.button 
+                className="profile-close" 
+                onClick={onClose} 
+                aria-label={t('close')}
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.9 }}
+              >
+                ×
+              </motion.button>
+            </header>
       <section className="profile-settings">
         <h3>{t('account')}</h3>
         <label>
@@ -162,12 +186,14 @@ export default function ProfileDashboard({ visible, onClose, token }) {
             onClick={() => fileInputRef.current && fileInputRef.current.click()}
             title={t('changeAvatar')}
           />
-          <button
+          <motion.button
             type="button"
             className="avatar-change-btn"
             onClick={() => fileInputRef.current && fileInputRef.current.click()}
             aria-label={t('changeAvatar')}
-          >✎</button>
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.9 }}
+          >✎</motion.button>
           <input
             type="file"
             accept="image/*"
@@ -176,7 +202,14 @@ export default function ProfileDashboard({ visible, onClose, token }) {
             style={{ display: 'none' }}
           />
         </div>
-        <button className="profile-save-btn" onClick={saveProfile}>{t('save')}</button>
+        <motion.button 
+          className="profile-save-btn" 
+          onClick={saveProfile}
+          whileHover={{ scale: 1.02 }}
+          whileTap={{ scale: 0.98 }}
+        >
+          {t('save')}
+        </motion.button>
       </section>
       <section className="profile-badges">
         <h3>{t('badges')}</h3>
@@ -184,10 +217,16 @@ export default function ProfileDashboard({ visible, onClose, token }) {
           {badges.map(b => {
             const unlocked = b.rule(habits);
             return (
-              <div key={b.key} className={`badge${unlocked ? ' unlocked' : ''}`}>                
+              <motion.div 
+                key={b.key} 
+                className={`badge${unlocked ? ' unlocked' : ''}`}
+                whileHover={{ scale: 1.05 }}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+              >                
                 <span className="badge-icon">{unlocked ? '🏅' : '🔒'}</span>
                 <span className="badge-title">{b.title}</span>
-              </div>
+              </motion.div>
             );
           })}
         </div>
@@ -208,44 +247,94 @@ export default function ProfileDashboard({ visible, onClose, token }) {
           )}
         </div>
         {logs.length > 5 && (
-          <button className="view-all-history-btn" onClick={() => setShowFullHistory(true)}>
+          <motion.button 
+            className="view-all-history-btn" 
+            onClick={() => setShowFullHistory(true)}
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+          >
             {t('viewAll')} ({logs.length})
-          </button>
+          </motion.button>
         )}
       </section>
       
-      <button className="profile-logout-btn" onClick={() => { logout(); onClose(); }}>
+      <motion.button 
+        className="profile-logout-btn" 
+        onClick={() => { logout(); onClose(); }}
+        whileHover={{ scale: 1.02 }}
+        whileTap={{ scale: 0.98 }}
+      >
         {t('logout')}
-      </button>
-    </div>
+      </motion.button>
+    </motion.div>
     </>
+      )}
+    </AnimatePresence>
   );
 
   // Full History Modal - rendered via portal to center on page
   const historyModal = showFullHistory && ReactDOM.createPortal(
-    <div className="history-modal-overlay" onClick={() => setShowFullHistory(false)}>
-      <div className="history-modal" onClick={e => e.stopPropagation()}>
+    <motion.div 
+      className="history-modal-overlay" 
+      onClick={() => setShowFullHistory(false)}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+    >
+      <motion.div 
+        className="history-modal" 
+        onClick={e => e.stopPropagation()}
+        initial={{ scale: 0.9, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        exit={{ scale: 0.9, opacity: 0 }}
+        transition={{ type: 'spring', damping: 25 }}
+      >
         <div className="history-modal-header">
           <h3>{t('history')}</h3>
-          <button className="history-modal-close" onClick={() => setShowFullHistory(false)}>✖</button>
+          <motion.button 
+            className="history-modal-close" 
+            onClick={() => setShowFullHistory(false)}
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.9 }}
+          >
+            ✖
+          </motion.button>
         </div>
         <div className="history-modal-actions">
-          <button className="edit-history-toggle" onClick={() => setEditMode(m => !m)}>
+          <motion.button 
+            className="edit-history-toggle" 
+            onClick={() => setEditMode(m => !m)}
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+          >
             {editMode ? t('done') : t('editHistory')}
-          </button>
+          </motion.button>
         </div>
         <div className="history-modal-list">
           {logs.map((h, idx) => (
-            <div key={idx} className="history-item">
+            <motion.div 
+              key={idx} 
+              className="history-item"
+              initial={{ opacity: 0, x: -10 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: idx * 0.03 }}
+            >
               {h.action} {h.habitName ? `(${h.habitName})` : ''}
               {editMode && (
-                <button className="history-delete-btn" onClick={() => removeHistoryAt(idx)}>✖</button>
+                <motion.button 
+                  className="history-delete-btn" 
+                  onClick={() => removeHistoryAt(idx)}
+                  whileHover={{ scale: 1.1 }}
+                  whileTap={{ scale: 0.9 }}
+                >
+                  ✖
+                </motion.button>
               )}
-            </div>
+            </motion.div>
           ))}
         </div>
-      </div>
-    </div>,
+      </motion.div>
+    </motion.div>,
     document.body
   );
 

@@ -1,14 +1,27 @@
 import React, { useContext, useState, useRef, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { AuthContext } from './AuthContext';
 import { useLanguage } from './LanguageContext';
 import LoginRegister from './LoginRegister';
 import Habits from './Habits';
 import AboutMe from './AboutMe';
 import ContactMe from './ContactMe';
-import Hero from './Hero';
 import Tutorial from './Tutorial';
 import ProfileDashboard from './ProfileDashboard';
 import Routines from './Routines';
+
+// Page transition variants
+const pageVariants = {
+  initial: { opacity: 0, y: 20 },
+  animate: { opacity: 1, y: 0 },
+  exit: { opacity: 0, y: -20 }
+};
+
+const pageTransition = {
+  type: 'tween',
+  ease: 'anticipate',
+  duration: 0.4
+};
 function App() {
   const { token, userProfile } = useContext(AuthContext);
   const { language, toggleLanguage, t } = useLanguage();
@@ -62,17 +75,6 @@ function App() {
   };
   const contactRef = useRef(null);
 
-  // hero section visibility (persistent per user)
-  const [heroVisible, setHeroVisible] = useState(() => {
-    try {
-      return localStorage.getItem('hideHero') !== 'true';
-    } catch { return true; }
-  });
-
-  const hideHero = () => {
-    setHeroVisible(false);
-    try { localStorage.setItem('hideHero', 'true'); } catch {}
-  };
 
   React.useEffect(() => {
     document.body.classList.toggle('dark', dark);
@@ -154,17 +156,6 @@ function App() {
           )}
         </div>
       </header>
-      {heroVisible && (
-        <Hero
-          contactRef={contactRef}
-          setPage={setPage}
-          token={token}
-          setAuthInitial={setAuthInitial}
-          showGetStarted={showGetStartedFlag}
-          openTutorial={() => setShowTutorial(true)}
-          onDismiss={hideHero}
-        />
-      )}
       <div className="main-wrapper">
         {mobileMenuOpen && <div className="mobile-overlay" onClick={() => setMobileMenuOpen(false)}></div>}
         <aside className={`sidebar ${mobileMenuOpen ? 'mobile-open' : ''}`}>
@@ -178,42 +169,76 @@ function App() {
           </button>
         </aside>
         <main className="main-content">
-          {page === 'about' ? <AboutMe /> : page === 'routines' ? <Routines /> : (token ? <Habits /> : <LoginRegister initial={authInitial} />)}
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={page + (token ? '-auth' : '-noauth')}
+              initial="initial"
+              animate="animate"
+              exit="exit"
+              variants={pageVariants}
+              transition={pageTransition}
+            >
+              {page === 'about' ? <AboutMe /> : page === 'routines' ? <Routines /> : (token ? <Habits /> : <LoginRegister initial={authInitial} />)}
+            </motion.div>
+          </AnimatePresence>
           
 
           {/* ContactMe at end of landing page */}
-          <div ref={contactRef} id="contact-section">
+          <motion.div 
+            ref={contactRef} 
+            id="contact-section"
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-100px" }}
+            transition={{ duration: 0.6 }}
+          >
             <ContactMe />
-          </div>
+          </motion.div>
         </main>
         {/* Render tutorial at root level so it truly pops up above everything */}
         <Tutorial visible={showTutorial} onClose={() => setShowTutorial(false)} />
         <ProfileDashboard visible={showProfile} onClose={() => toggleProfile(false)} token={token} />
       </div>
       {/* Help button to re-open tutorial (always visible when logged in) */}
-      {token && !showTutorial && (
-        <button
-          className="tutorial-help-btn"
-          onClick={() => setShowTutorial(true)}
-          title={t('showTutorial')}
-          aria-label={t('showTutorial')}
-        >
-          ?
-        </button>
-      )}
+      <AnimatePresence>
+        {token && !showTutorial && (
+          <motion.button
+            className="tutorial-help-btn"
+            onClick={() => setShowTutorial(true)}
+            title={t('showTutorial')}
+            aria-label={t('showTutorial')}
+            initial={{ scale: 0 }}
+            animate={{ scale: 1 }}
+            exit={{ scale: 0 }}
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.9 }}
+          >
+            ?
+          </motion.button>
+        )}
+      </AnimatePresence>
       <footer className="site-footer">
         &copy; {new Date().getFullYear()} {t('footer')}
       </footer>
       
       {/* Back to Top Button */}
-      <button
-        className={`back-to-top-button ${showBackToTop ? 'visible' : 'hidden'}`}
-        onClick={handleBackToTop}
-        aria-label={t('backToTop')}
-        title={t('backToTop')}
-      >
-        ↑
-      </button>
+      <AnimatePresence>
+        {showBackToTop && (
+          <motion.button
+            className="back-to-top-button visible"
+            onClick={handleBackToTop}
+            aria-label={t('backToTop')}
+            title={t('backToTop')}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 20 }}
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.9 }}
+          >
+            ↑
+          </motion.button>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

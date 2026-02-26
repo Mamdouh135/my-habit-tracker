@@ -1,10 +1,17 @@
 import React, { useState, useContext, useEffect, useRef } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import ReCAPTCHA from 'react-google-recaptcha';
 import { register, login } from './api';
 import { AuthContext } from './AuthContext';
 import { useLanguage } from './LanguageContext';
 
 const RECAPTCHA_SITE_KEY = '6LeRl3MsAAAAAJ7Z5Bz9_9Dtd1xAU-ebSZenhC5N';
+
+// CAPTCHA TEMPORARILY DISABLED FOR CLOUDFLARE DEPLOYMENT
+const CAPTCHA_ENABLED = false;
+
+// Check if we're on localhost (where reCAPTCHA is configured)
+const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
 
 export default function LoginRegister({ initial }) {
   const { t } = useLanguage();
@@ -57,8 +64,8 @@ export default function LoginRegister({ initial }) {
 
     // Validation for registration
     if (isRegister) {
-      // Check CAPTCHA
-      if (!captchaToken) {
+      // Check CAPTCHA (only when enabled)
+      if (CAPTCHA_ENABLED && isLocalhost && !captchaToken) {
         setError(t('verifyCaptcha'));
         return;
       }
@@ -93,23 +100,38 @@ export default function LoginRegister({ initial }) {
   };
 
   return (
-    <div>
-      <h2>{isRegister ? t('createAccount') : t('login')}</h2>
+    <motion.div
+      initial={{ opacity: 0, scale: 0.95 }}
+      animate={{ opacity: 1, scale: 1 }}
+      transition={{ duration: 0.3 }}
+    >
+      <motion.h2
+        key={isRegister ? 'register' : 'login'}
+        initial={{ opacity: 0, x: -20 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ duration: 0.3 }}
+      >
+        {isRegister ? t('createAccount') : t('login')}
+      </motion.h2>
       <form onSubmit={handleSubmit} autoComplete="on">
-        <input 
+        <motion.input 
           placeholder={t('username')} 
           value={username} 
           onChange={e => setUsername(e.target.value)}
           autoComplete="username"
           name="username"
+          whileFocus={{ scale: 1.02 }}
+          transition={{ type: 'spring', stiffness: 300 }}
         />
-        <input 
+        <motion.input 
           placeholder={t('password')} 
           type="password" 
           value={password} 
           onChange={e => setPassword(e.target.value)}
           autoComplete={isRegister ? "new-password" : "current-password"}
           name="password"
+          whileFocus={{ scale: 1.02 }}
+          transition={{ type: 'spring', stiffness: 300 }}
         />
         
         {/* Password strength indicator - only show during registration */}
@@ -140,8 +162,8 @@ export default function LoginRegister({ initial }) {
           </div>
         )}
 
-        {/* reCAPTCHA - only show during registration */}
-        {isRegister && (
+        {/* reCAPTCHA - only show during registration when enabled */}
+        {CAPTCHA_ENABLED && isRegister && isLocalhost && (
           <div style={{ margin: '16px 0', display: 'flex', justifyContent: 'center' }}>
             <ReCAPTCHA
               ref={recaptchaRef}
@@ -153,12 +175,35 @@ export default function LoginRegister({ initial }) {
           </div>
         )}
 
-        <button type="submit">{isRegister ? t('createAccount') : t('login')}</button>
+        <motion.button 
+          type="submit"
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          transition={{ type: 'spring', stiffness: 400 }}
+        >
+          {isRegister ? t('createAccount') : t('login')}
+        </motion.button>
       </form>
-      <button className="auth-toggle" onClick={() => setIsRegister(r => !r)}>
+      <motion.button 
+        className="auth-toggle" 
+        onClick={() => setIsRegister(r => !r)}
+        whileHover={{ scale: 1.02 }}
+        whileTap={{ scale: 0.98 }}
+      >
         {isRegister ? t('haveAccount') : t('noAccount')}
-      </button>
-      {error && <div className="error">{error}</div>}
-    </div>
+      </motion.button>
+      <AnimatePresence>
+        {error && (
+          <motion.div 
+            className="error"
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+          >
+            {error}
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </motion.div>
   );
 }
